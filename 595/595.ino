@@ -24,61 +24,29 @@ void setup() {
   pinMode(latchPin, OUTPUT);
 
 }
-int round_arr [6] = {1,0,1,1,0,1};
-//
-
-int base_arr [4] = {0,0,0,1};
 
 
-byte round_arr_to_SR(int round_arr [6]) {
-  byte temp =0;
-  for (int i = 1; i<7; i++){ 
-    if (round_arr[i-1] ==1) {
-     temp = (temp + pow(2,i))+1;
-      Serial.print(i);
-      Serial.print(" ");
-      Serial.print(pow(2,i));
-      Serial.print(" ");
-      Serial.println(temp);
-    }
-   }
-  return temp;
-}
 
-byte base_arr_to_SR(int base_arr [4]) {
- byte temp =0;
-  for (int i = 1; i<5; i++){ 
-  if (base_arr[i-1] ==1){
-      temp = (temp + pow(2,i))+1;
-      Serial.print(i);
-      Serial.print(" ");
-      Serial.print(pow(2,i));
-      Serial.print(" ");
-      Serial.println(temp);
-  }
-   }
-   
-  return temp;
-}
 
 
 byte round_SR;
 byte base_SR;
 void loop() {
   //count up routine
-    round_SR= round_arr_to_SR(round_arr);
-    base_SR= base_arr_to_SR(base_arr);
+   
   
     Serial.println("-");
     //ground latchPin and hold low for as long as you are transmitting
     digitalWrite(latchPin, 0);
-    //count up on GREEN/ ORANGE LEDs
-    shiftOut(dataPin, clockPin,  round_SR); 
-    //count down on BLUE LEDs
-    shiftOut(dataPin, clockPin, base_SR);
+    
+    //round LEDs
+    shiftOut(dataPin, clockPin,  0b100110); 
+    //base LEDs
+    shiftOut(dataPin, clockPin, 0b0111);
+    
     //return the latch pin high to signal chip that it 
     //no longer needs to listen for information
-    digitalWrite(latchPin, 1);
+    digitalWrite(latchPin, 2);
 //    Serial.println(round_SR);
 //    Serial.println(round_SR,BIN);
      //Serial.println(base_SR);
