@@ -79,7 +79,7 @@ int outs = 0;
 int button_curr [5]= {0,0,0,0,0};
 int button_prev [5] = {0,0,0,0,0};
 
-byte bases = 0b1000;
+byte bases = 0b000;
 
 int press_code( int button_curr[5], int button_prev[5])
 {
@@ -109,54 +109,57 @@ switch (press_type){
     }
 }
 
+int enable_home(int en) {return 8*en;}
+
+
+int CountRunners(byte bases)
+{
+    return (bases==0)? 0: (bases & 1) + CountRunners(bases >> 1);
+}
+
 void update_bases(byte& bases, int press_type, int& add_runs){
-  add_runs=0;
-  switch (press_type){
-      case 1: // Single
-        switch (bases){
-          case 0b1000:
-             bases= 0b1100;
-             break;
-             
-           case 0b1001:
-             bases= 0b1101;
-             break;
-               
-          case 0b1010:
-          case 0b1100:
-             bases= 0b1110;
-             break;
-            
-          case 0b1011:
-          case 0b1101:
-          case 0b1110:
-          case 0b1111: add_runs =1;
-              bases= 0b1111;
-              break;
-        }
-        break;
-      case 2: // Double
-        break;
-      case 3: // Triple
-        break;
-        
-      case 4: // Homerun
-       switch (bases){
-        case 0b1000: add_runs=1;
-        case 0b1001: add_runs=2;
-        case 0b1010: add_runs=2;
-        case 0b1100: add_runs=2;
-        case 0b1011: add_runs=3;
-        case 0b1101: add_runs=3;
-        case 0b1110: add_runs=3;
-        case 0b1111: add_runs=4;
-           bases= 0b1000;
+ byte new_bases = bases;
+ add_runs =0;
+ switch (press_type) {
+    case 1: // Single
+      switch(bases) {
+        case 0b000:
+          new_bases = 0b100;
+          break;
+         case 0b001:
+           new_bases = 0b101;
            break;
-       }
-        break;
-      default:
-        break;
-    }
+        case 0b100: case 0b010:
+          new_bases = 0b110;
+          break;
+         default:
+           new_bases = 0b111;
+           break;
+      }
+      break;
+      
+    case 2: // Double
+      switch(bases) {
+        case 0b000:
+          new_bases = 0b010;
+          break;
+        default:
+          new_bases = 0b011;
+          break;
+      }
+      break;
+      
+    case 3: // Triple
+      new_bases = 0b001;
+      break;
+    
+    case 4: // HomeRun
+      new_bases= 0b000;
+      break;
+ }
+ if (press_type != 0 && press_type != 5)
+  add_runs = CountRunners(bases)+1 - CountRunners(new_bases);
+  bases = new_bases;
 }
 
 
@@ -185,21 +188,19 @@ void loop() {
    {  Serial.println((String)"Number of Runs: " + num_runs);}
      
     //ground latchPin and hold low for as long as you are transmitting
+    if (press_type !=0 && press_type !=5) {
+       digitalWrite(latchPin, 0);
+        shiftOut(dataPin, clockPin,   strike_out_shift_out(strikes,outs)); 
+        shiftOut(dataPin, clockPin, bases + enable_home(0));
+        digitalWrite(latchPin, 1);
+        delay (1000);
+    }
+   
     digitalWrite(latchPin, 0);
-    
-    //Strikes/ Outs LEDs
     shiftOut(dataPin, clockPin,   strike_out_shift_out(strikes,outs)); 
-    //base LEDs
-    shiftOut(dataPin, clockPin, bases);
-    
-    //return the latch pin high to signal chip that it 
-    //no longer needs to listen for information
-    digitalWrite(latchPin, 2);
-//    Serial.println(round_SR);
-//    Serial.println(round_SR,BIN);
-     //Serial.println(base_SR);
-    //Serial.println(base_SR,BIN);
-    
+    shiftOut(dataPin, clockPin, bases + enable_home(1));
+    digitalWrite(latchPin, 1);
+
     
     for (int i=0; i <5; i++) {button_prev[i]=button_curr[i];}
     
