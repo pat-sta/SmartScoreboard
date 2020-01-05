@@ -9,11 +9,11 @@
 //**************************************************************//
 
 //Pin connected to ST_CP of 74HC595
-int latchPin = 8;
+int latchPin = 14; //yellow
 //Pin connected to SH_CP of 74HC595
-int clockPin = 12;
+int clockPin = 15; //green
 ////Pin connected to DS of 74HC595
-int dataPin = 11;
+int dataPin = 16; //blue
 
 
 
@@ -42,7 +42,7 @@ void loop() {
     //round LEDs
     shiftOut(dataPin, clockPin,  0b100110); 
     //base LEDs
-    shiftOut(dataPin, clockPin, 0b0111);
+    shiftOut(dataPin, clockPin, 0b0011);
     
     //return the latch pin high to signal chip that it 
     //no longer needs to listen for information
