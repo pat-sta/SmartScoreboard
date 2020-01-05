@@ -27,7 +27,29 @@ void setup() {
 
 
 
+byte round_shift_out( int t1_round, int t2_round)
+{
+        if (t1_round ==0 && t2_round ==0) return 0b000000;
+   else if (t1_round ==0 && t2_round ==1) return 0b000001;
+   else if (t1_round ==0 && t2_round ==2) return 0b000011;
+   else if (t1_round ==0 && t2_round ==3) return 0b000111;
+  
+  else if (t1_round ==1 && t2_round ==0) return 0b100000;
+  else if (t1_round ==1 && t2_round ==1) return 0b100100;
+  else if (t1_round ==1 && t2_round ==2) return 0b100110;
+  else if (t1_round ==1 && t2_round ==3) return 0b100111;
+  
 
+  else if (t1_round ==2 && t2_round ==0) return 0b110000;
+  else if (t1_round ==2 && t2_round ==1) return 0b110100;
+  else if (t1_round ==2 && t2_round ==2) return 0b110110;
+  else if (t1_round ==2 && t2_round ==3) return 0b110111;
+
+   else if (t1_round ==3 && t2_round ==0) return 0b111000;
+  else if (t1_round ==3 && t2_round ==1) return 0b111100;
+  else if (t1_round ==3 && t2_round ==2) return 0b111110;
+  else return 0b111111;
+}
 
 byte round_SR;
 byte base_SR;
@@ -40,7 +62,7 @@ void loop() {
     digitalWrite(latchPin, 0);
     
     //round LEDs
-    shiftOut(dataPin, clockPin,  0b100110); 
+    shiftOut(dataPin, clockPin,  round_shift_out(0,3)); 
     //base LEDs
     shiftOut(dataPin, clockPin, 0b0011);
     
