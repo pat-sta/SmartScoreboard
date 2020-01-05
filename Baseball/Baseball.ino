@@ -36,10 +36,12 @@ void setup() {
   pinMode(blue, INPUT);
   pinMode(yellow, INPUT);
    pinMode(white, INPUT);
+   Serial.println("Initializing");
   
 
 }
 
+// random flip
 
 
 byte strike_out_shift_out( int strikes, int outs)
@@ -68,23 +70,73 @@ byte strike_out_shift_out( int strikes, int outs)
 
 byte round_SR;
 byte base_SR;
-int strikes = 1;
+int strikes = 0;
 int outs = 0;
 
-int green_curr=0;
-int red_curr=0;
-int blue_curr=0;
-int yellow_curr=0;
-int white_curr=0;
-
-int green_prev=0;
-int red_prev=0;
-int blue_prev=0;
-int yellow_prev=0;
-int white_prev=0;
+int button_curr [5]= {0,0,0,0,0};
+int button_prev [5] = {0,0,0,0,0};
 
 byte bases = 0b1000;
 
+int press_code( int button_curr[5], int button_prev[5])
+{
+  int code=0;
+  for (int i =0; i <5; i++){
+    if (!button_prev[i] && button_curr[i])
+      code= i+1;
+     }
+   return code;
+}
+
+void print_action(int press_type) {
+switch (press_type){
+      case 1: Serial.println("---\nSingle");
+          
+        break;
+      case 2: Serial.println("---\nDouble");
+        break;
+      case 3: Serial.println("---\nTriple");
+        break;
+      case 4: Serial.println("---\nHome Run");
+        break;
+      case 5: Serial.println("---\nStrike");
+        break;
+      default:
+        break;
+    }
+}
+
+byte update_bases(byte current_bases, int press_type){
+  byte new_bases = current_bases;
+  switch (press_type){
+      case 1: // Single
+        switch (current_bases){
+          case 0b1000:
+             new_bases= 0b1100;
+             break;
+          case 0b1100:
+             new_bases= 0b1110;
+             break;
+          case 0b1110:
+              new_bases= 0b1111;
+              break;
+        }
+        break;
+      case 2: // Double
+        break;
+      case 3: // Triple
+        break;
+      case 4: // Homerun
+        break;
+      default:
+        break;
+    }
+  return new_bases;
+}
+
+int num_runs=0;
+    
+int press_type=0;
 void loop() {
 
 
@@ -92,15 +144,19 @@ void loop() {
   // Data gathering
    
 
-   green_curr = digitalRead(green);
-   red_curr = digitalRead(red);
-   blue_curr = digitalRead(blue);
-   yellow_curr = digitalRead(yellow);
-   white_curr = digitalRead(white);
+   button_curr[0] = !digitalRead(green);
+   button_curr[1] = !digitalRead(red);
+   button_curr[2] = !digitalRead(blue);
+   button_curr[3] = !digitalRead(yellow);
+   button_curr[4] = !digitalRead(white);
 
-   
+   press_type = press_code(button_curr, button_prev);
   
-    Serial.println("-");
+   print_action(press_type);
+
+    bases = update_bases(bases,press_type);
+
+     
     //ground latchPin and hold low for as long as you are transmitting
     digitalWrite(latchPin, 0);
     
@@ -116,19 +172,24 @@ void loop() {
 //    Serial.println(round_SR,BIN);
      //Serial.println(base_SR);
     //Serial.println(base_SR,BIN);
-    Serial.println();
     
-    green_prev= green_curr;
-    red_prev= red_curr;
-    blue_prev= blue_curr;
-    yellow_prev= yellow_curr;
-    white_prev= white_curr;
+    
+    for (int i=0; i <5; i++) {button_prev[i]=button_curr[i];}
     
 
     
-    delay(2000);
+    delay(50);
  
 }
+
+
+
+
+
+
+
+
+
 
 void shiftOut(int myDataPin, int myClockPin, byte myDataOut) {
   // This shifts 8 bits out MSB first, 
