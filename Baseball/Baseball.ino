@@ -21,7 +21,9 @@ int blue = 10; //triple
 int red = 11; //double
 int green = 12; //single
 
-
+int num_runs=0;
+int add_runs =0;
+int press_type=0;
 
 void setup() {
   //Start Serial for debuging purposes  
@@ -37,6 +39,7 @@ void setup() {
   pinMode(yellow, INPUT);
    pinMode(white, INPUT);
    Serial.println("Initializing");
+  {  Serial.println((String)"Number of Runs: " + num_runs);}
   
 
 }
@@ -106,19 +109,29 @@ switch (press_type){
     }
 }
 
-byte update_bases(byte current_bases, int press_type){
-  byte new_bases = current_bases;
+void update_bases(byte& bases, int press_type, int& add_runs){
+  add_runs=0;
   switch (press_type){
       case 1: // Single
-        switch (current_bases){
+        switch (bases){
           case 0b1000:
-             new_bases= 0b1100;
+             bases= 0b1100;
              break;
+             
+           case 0b1001:
+             bases= 0b1101;
+             break;
+               
+          case 0b1010:
           case 0b1100:
-             new_bases= 0b1110;
+             bases= 0b1110;
              break;
+            
+          case 0b1011:
+          case 0b1101:
           case 0b1110:
-              new_bases= 0b1111;
+          case 0b1111: add_runs =1;
+              bases= 0b1111;
               break;
         }
         break;
@@ -126,17 +139,29 @@ byte update_bases(byte current_bases, int press_type){
         break;
       case 3: // Triple
         break;
+        
       case 4: // Homerun
+       switch (bases){
+        case 0b1000: add_runs=1;
+        case 0b1001: add_runs=2;
+        case 0b1010: add_runs=2;
+        case 0b1100: add_runs=2;
+        case 0b1011: add_runs=3;
+        case 0b1101: add_runs=3;
+        case 0b1110: add_runs=3;
+        case 0b1111: add_runs=4;
+           bases= 0b1000;
+           break;
+       }
         break;
       default:
         break;
     }
-  return new_bases;
 }
 
-int num_runs=0;
-    
-int press_type=0;
+
+
+
 void loop() {
 
 
@@ -154,8 +179,10 @@ void loop() {
   
    print_action(press_type);
 
-    bases = update_bases(bases,press_type);
-
+   update_bases(bases,press_type,add_runs);
+   num_runs+=add_runs;
+   if (add_runs != 0) 
+   {  Serial.println((String)"Number of Runs: " + num_runs);}
      
     //ground latchPin and hold low for as long as you are transmitting
     digitalWrite(latchPin, 0);
