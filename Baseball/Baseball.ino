@@ -193,7 +193,7 @@ void loop() {
         shiftOut(dataPin, clockPin,   strike_out_shift_out(strikes,outs)); 
         shiftOut(dataPin, clockPin, bases + enable_home(0));
         digitalWrite(latchPin, 1);
-        delay (1000);
+        delay (750);
     }
    
     digitalWrite(latchPin, 0);
