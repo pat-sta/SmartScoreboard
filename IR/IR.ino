@@ -14,17 +14,21 @@ void setup() {
 //  myReceiver2.enableIRIn(); // Start the receiver
   Serial.println(("Ready to receive IR signals"));
 }
-
+int continue_=0;
 void loop() {
+ continue_ =0;
   //Continue looping until you get a complete signal received
   if (myReceiver.getResults()) {
     Serial.println(pin);
     myDecoder.decode();           //Decode it
-    Serial.println(myDecoder.value); 
+   Serial.println(myDecoder.value); 
    // myDecoder.dumpResults(true);  //Now print results. Use false for less detail
     myReceiver.enableIRIn();      //Restart receiver
    // Serial.println(myDecoder.value);
     switch(myDecoder.value){
+      case 0:
+        continue_=1;
+        break;
       case 16580863:
         Serial.println("Single");
         break;
@@ -41,11 +45,11 @@ void loop() {
         Serial.println("Strike");
         break;     
     }}
-    else{ pin = (pin==2)? 4:2;
+    if(continue_){ pin = (pin==2)? 4:2;
     if (myReceiver.getResults()) {
-    Serial.println("1ST");
+    //Serial.println("1ST");
     myDecoder.decode();           //Decode it
-    Serial.println(myDecoder.value); 
+   // Serial.println(myDecoder.value); 
    // myDecoder.dumpResults(true);  //Now print results. Use false for less detail
     myReceiver.enableIRIn();      //Restart receiver
    // Serial.println(myDecoder.value);

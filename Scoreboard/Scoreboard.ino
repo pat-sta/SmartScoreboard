@@ -120,8 +120,8 @@ int number_B = 0;
 void loop()
 {
 
-  showNumber(number_A); //Test pattern
-  showNumber(number_B); //Test pattern
+  showNumber(number_A); 
+  showNumber(number_B); 
    //Latch the current segment data
   digitalWrite(segmentLatch, LOW);
   digitalWrite(segmentLatch, HIGH); //Register moves storage register on the rising edge of RCK
@@ -236,21 +236,16 @@ void showNumber(float value)
 
   //Serial.print("number: ");
   //Serial.println(number);
-  if (negative)
-  {
+  if (negative) {
      if (number > 9) {number = 9;}
      postNumber(number, false);
      postNumber('-', false);
   }
-  else
-  {
-    
+  else {
      for (byte x = 0 ; x < 2 ; x++)
     {
       int remainder = number % 10;
-  
       postNumber(remainder, false);
-  
       number /= 10;
     }
   }
