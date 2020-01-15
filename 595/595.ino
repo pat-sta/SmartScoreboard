@@ -1,4 +1,4 @@
-
+//final
 //**************************************************************//
 //  Name    : shiftOutCode, Dual Binary Counters                 //
 //  Author  : Carlyn Maw, Tom Igoe                               //
@@ -9,11 +9,11 @@
 //**************************************************************//
 
 //Pin connected to ST_CP of 74HC595
-int latchPin = 14; //yellow
+int latchPin = 15; //yellow
 //Pin connected to SH_CP of 74HC595
-int clockPin = 15; //green
+int clockPin = 16; //green
 ////Pin connected to DS of 74HC595
-int dataPin = 16; //blue
+int dataPin = 17; //blue
 
 
 
@@ -64,19 +64,28 @@ void loop() {
     digitalWrite(latchPin, 0);
     
     //round LEDs
-    shiftOut(dataPin, clockPin,  round_shift_out(0,3)); 
+    shiftOut(dataPin, clockPin,  0b111000); 
     //base LEDs
-    shiftOut(dataPin, clockPin, 0b0011);
+    shiftOut(dataPin, clockPin, 0b0100);
     
-    //return the latch pin high to signal chip that it 
-    //no longer needs to listen for information
-    digitalWrite(latchPin, 2);
-//    Serial.println(round_SR);
-//    Serial.println(round_SR,BIN);
-     //Serial.println(base_SR);
-    //Serial.println(base_SR,BIN);
+     
+    digitalWrite(latchPin, 1);
+
     Serial.println();
     delay(1000);
+     digitalWrite(latchPin, 0);
+    //round LEDs
+    shiftOut(dataPin, clockPin,  0b010101); 
+    //base LEDs
+    shiftOut(dataPin, clockPin, 0b1010);
+    
+    
+    digitalWrite(latchPin, 1);
+
+    Serial.println();
+    delay(1000);
+
+    
  
 }
 

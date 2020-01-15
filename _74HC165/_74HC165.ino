@@ -17,30 +17,40 @@ void setup(){
   SPI.begin();
  
   pinMode(PL, OUTPUT);
+  pinMode(5, OUTPUT);
+  pinMode(6, OUTPUT);
   digitalWrite(PL, HIGH);
+  analogWrite(5, 250);
+  analogWrite(6, 250);
+  
 }
 
 
 void loop(){
-  digitalWrite(PL, LOW);
+ digitalWrite(PL, LOW);
   delay(1);
   digitalWrite(PL,HIGH);
   shift_2 = SPI.transfer(0x00);
   shift_1 = SPI.transfer(0x00);
 
   for (int i = 0; i <5 ; i++){
-  team1_buttons[i] = !bitRead(shift_1,7-i);
-  }
+  team1_buttons[i] = !bitRead(shift_2,7-i);
+  Serial.print(team1_buttons[i]);
   
+  
+  }
+  Serial.println();
  for(int i = 0; i < 5; i++)
 {
+    team1_buttons[i] = !bitRead(shift_1,7-i);
   Serial.print(team1_buttons[i]);
 }
-Serial.println();
+  Serial.println();
   
 //  Serial.print("Register 1 = ");
-//  Serial.println(shift_1,BIN);
-//  Serial.print("Register 2 = ");
-//  Serial.println(shift_2,BIN);  
-  delay(10);
+// Serial.println(shift_1,BIN);
+// Serial.print("Register 2 = ");
+// Serial.println(shift_2,BIN);  
+  Serial.println();
+  delay(1000);
 }

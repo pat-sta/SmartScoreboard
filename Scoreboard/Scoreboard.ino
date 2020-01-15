@@ -1,3 +1,5 @@
+   //final
+    
     /*
  Controlling large 7-segment displays
  By: Nathan Seidle
@@ -30,15 +32,15 @@ void loopNumpers(int time_amt, int num_times);
 
 //GPIO declarations
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-byte segmentClock = 8;
-byte segmentLatch = 7;
-byte segmentData = 9;
+byte segmentClock = 3;
+byte segmentLatch = 4;
+byte segmentData = 2;
 
-byte white_button= 2;
-byte blue_button= 3;
-byte red_button= 4;
-byte yellow_button= 5;
-byte green_button= 6;
+//byte white_button= 2;
+//byte blue_button= 3;
+//byte red_button= 4;
+//byte yellow_button= 5;
+//byte green_button= 6;
 
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 //Button Value declarations
@@ -47,6 +49,8 @@ int last_red_state = 1;
 int last_yellow_state = 1;
 int last_blue_state = 1;
 int last_white_state = 1;
+
+int PWM_hex =3;
  
 
 void setup()
@@ -57,14 +61,15 @@ void setup()
   pinMode(segmentClock, OUTPUT);
   pinMode(segmentData, OUTPUT);
   pinMode(segmentLatch, OUTPUT);
+  pinMode(PWM_hex, OUTPUT);
 
-  pinMode(green_button, INPUT_PULLUP);
-  pinMode(red_button, INPUT_PULLUP);
-  pinMode(yellow_button, INPUT_PULLUP);
-   pinMode(blue_button, INPUT_PULLUP);
-  pinMode(white_button, INPUT_PULLUP);
+//  pinMode(green_button, INPUT_PULLUP);
+//  pinMode(red_button, INPUT_PULLUP);
+//  pinMode(yellow_button, INPUT_PULLUP);
+//   pinMode(blue_button, INPUT_PULLUP);
+//  pinMode(white_button, INPUT_PULLUP);
+// 
  
-
   digitalWrite(segmentClock, LOW);
   digitalWrite(segmentData, LOW);
   digitalWrite(segmentLatch, LOW);
@@ -119,59 +124,60 @@ int number_B = 0;
 
 void loop()
 {
-
-  showNumber(number_A); 
-  showNumber(number_B); 
-   //Latch the current segment data
-  digitalWrite(segmentLatch, LOW);
-  digitalWrite(segmentLatch, HIGH); //Register moves storage register on the rising edge of RCK
-  
-  if(new_press(&last_green_state, green_button))
-  {
-    if (number_A <99) {number_A ++;}
-  }
-  if(new_press(&last_red_state, red_button))
-  {
-    if (number_A>-9) {number_A --;}
-  }
-   if(new_press(&last_blue_state, blue_button))
-  {
-    number_A = 0;
-    number_B = 0;
-  }
-
-   if(new_press(&last_white_state, white_button))
-  {
-    if (number_B <99) {number_B ++;}
-  }
-  if(new_press(&last_yellow_state, yellow_button))
-  {
-    if (number_B>-9) {number_B --;}
-  }
-  delay(50);
-}
-
-int new_press(int * last_pressed, int pin)
-{
-  // pressed = 0 => switch was not pressed
-  int pressed = !(digitalRead(pin));
-  if (pressed)
-  {
-    if(*last_pressed)
-    {
-      return 0;
-    }
-    else
-    {
-      *last_pressed = 1;
-      return 1;
-    }
-  }
-  else
-  {
-    *last_pressed = 0;
-    return 0;
-  }
+  digitalWrite(PWM_hex,255);
+//
+//  showNumber(number_A); 
+//  showNumber(number_B); 
+//   //Latch the current segment data
+//  digitalWrite(segmentLatch, LOW);
+//  digitalWrite(segmentLatch, HIGH); //Register moves storage register on the rising edge of RCK
+//  
+//  if(new_press(&last_green_state, green_button))
+//  {
+//    if (number_A <99) {number_A ++;}
+//  }
+//  if(new_press(&last_red_state, red_button))
+//  {
+//    if (number_A>-9) {number_A --;}
+//  }
+//   if(new_press(&last_blue_state, blue_button))
+//  {
+//    number_A = 0;
+//    number_B = 0;
+//  }
+//
+//   if(new_press(&last_white_state, white_button))
+//  {
+//    if (number_B <99) {number_B ++;}
+//  }
+//  if(new_press(&last_yellow_state, yellow_button))
+//  {
+//    if (number_B>-9) {number_B --;}
+//  }
+//  delay(50);
+//}
+//
+//int new_press(int * last_pressed, int pin)
+//{
+//  // pressed = 0 => switch was not pressed
+//  int pressed = !(digitalRead(pin));
+//  if (pressed)
+//  {
+//    if(*last_pressed)
+//    {
+//      return 0;
+//    }
+//    else
+//    {
+//      *last_pressed = 1;
+//      return 1;
+//    }
+//  }
+//  else
+//  {
+//    *last_pressed = 0;
+//    return 0;
+//  }
 }
 
 
