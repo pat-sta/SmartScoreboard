@@ -1,5 +1,5 @@
 #include <SPI.h>
-class SR_165
+class input_SR
 {
   public:
     byte shift[2];
@@ -26,7 +26,7 @@ class SR_165
   
     int currState [10];
     int prevState [10];
-    SR_165(int _PL) :PL(_PL) {
+    input_SR(int _PL) :PL(_PL) {
       pinMode(PL, OUTPUT);
       SPI.setClockDivider(SPI_CLOCK_DIV128);
       SPI.setDataMode(SPI_MODE0);
@@ -50,91 +50,146 @@ class SR_165
       return 0;
     }
 };
-SR_165 input_SR(8);
+
+
+class hex_display
+{ public:
+    int segmentLatch;
+    int segmentClock;
+    int segmentData;
+
+    hex_display( int _segmentLatch, int _segmentClock, int _segmentData):
+      segmentLatch(_segmentLatch), segmentClock(_segmentClock), segmentData(_segmentData)
+    {
+      pinMode(segmentLatch, OUTPUT);
+      pinMode(segmentClock, OUTPUT);
+      pinMode(segmentData, OUTPUT);
+    }
+
+    void LatchData()
+    {
+    digitalWrite(segmentLatch, LOW);
+    digitalWrite(segmentLatch, HIGH);
+    }
+    //Given a number, or '-', shifts it out to the display
+   
+
+//Given a number, or '-', shifts it out to the display
+void postNumber(byte number, boolean decimal)
+{
+  //    -  A
+  //   / / F/B
+  //    -  G
+  //   / / E/C
+  //    -. D/DP
+
+//#define a  1<<0
+//#define b  1<<6
+//#define c  1<<5
+//#define d  1<<4
+//#define e  1<<3
+//#define f  1<<1
+//#define g  1<<2
+//#define dp 1<<7
+
+  byte segments;
+
+  switch (number)
+  {
+    case 1: segments = b | c; break;
+    case 2: segments = a | b | d | e | g; break;
+    case 3: segments = a | b | c | d | g; break;
+    case 4: segments = f | g | b | c; break;
+    case 5: segments = a | f | g | c | d; break;
+    case 6: segments = a | f | g | e | c | d; break;
+    case 7: segments = a | b | c; break;
+    case 8: segments = a | b | c | d | e | f | g; break;
+    case 9: segments = a | b | c | d | f | g; break;
+    case 0: segments = a | b | c | d | e | f; break;
+    case ' ': segments = 0; break;
+    case 'c': segments = g | e | d; break;
+    case '-': segments = g; break;
+    case 'P': segments = e | f | a | b | g; break;
+    case 'I': segments = b | c; break;
+    case 'n': segments = e | a | c | f | b; break;
+    case 'g': segments = a | f | g | b | c | d; break;
+    case 'O': segments = a | b | c | d | e | f; break;
+  }
+
+  if (decimal) segments |= dp;
+
+  //Clock these bits out to the drivers
+  for (byte x = 0 ; x < 8 ; x++)
+  {
+    digitalWrite(segmentClock, LOW);
+    digitalWrite(segmentData, segments & 1 << (7 - x));
+    digitalWrite(segmentClock, HIGH); //Data transfers to the register on the rising edge of SRCK
+    
+  }
+}
+//Takes a number (-9,99) and displays on two 7-Segment Displays. Has boundary bhecks
+void showNumber(float value)
+{
+  int negative = (value <0)? 1: 0;
+  int number = abs(value); //Remove negative signs and any decimals
+
+  //Serial.print("number: ");
+  //Serial.println(number);
+  if (negative) {
+     if (number > 9) {number = 9;}
+     postNumber(number, false);
+     postNumber('-', false);
+  }
+  else {
+     for (byte x = 0 ; x < 2 ; x++)
+    {
+      int remainder = number % 10;
+      postNumber(remainder, false);
+      number /= 10;
+    }
+  }
+};
+
+
+
+input_SR buttons(8);
+hex_display hex(4,3,2);
 
 void setup(){
   Serial.begin(9600);
  
   }
-  int a;
+  int a1;
 void loop(){
-//  input_SR.DataShiftIn();
-// input_SR.updateStates();
+
  
-  a =input_SR.getPressType();
-  if(a!=0){Serial.println(a);}
- 
+  a1 =buttons.getPressType();
+  if(a1!=0){Serial.println(a1);}
+  hex.showNumber(3,4);
+  hex.LatchData();
+  delay(1000);
   
   
   
   
   }
 
-//
-//
-//class SR_165
-//{
-//
-//}
-//
-//class SR_595
-//{
-//    int latchPin;
-//    int clockPin;
-//    int dataPin;
-//
-//    SR_595( int _latchPin, int _clockPin, int _dataPin):
-//      latchPin(_latchPin), clockPin(_clockPin), dataPin(_dataPin)
-//    {
-//      pinMode(latchPin, OUTPUT);
-//      pinMode(clockPin, OUTPUT);
-//      pinMode(dataPin, OUTPUT);
-//    };
-//    void shiftOut(byte myDataOut) {
-//      //internal function setup
-//      int i = 0;
-//      int pinState;
-//
-//      //clear everything out just in case to
-//      //prepare shift register for bit shifting
-//      digitalWrite(dataPin, 0);
-//      digitalWrite(clockPin, 0);
-//
-//      for (i = 7; i >= 0; i--)  {
-//        digitalWrite(clockPin, 0);
-//        if ( myDataOut & (1 << i) ) {
-//          pinState = 1;
-//        }
-//        else {
-//          pinState = 0;
-//        }
-//
-//        //Sets the pin to HIGH or LOW depending on pinState
-//        digitalWrite(dataPin, pinState);
-//        //register shifts bits on upstroke of clock pin
-//        digitalWrite(clockPin, 1);
-//        //zero the data pin after shift to prevent bleed through
-//        digitalWrite(dataPin, 0);
-//      }
-//      //stop shifting
-//      digitalWrite(clockPin, 0);
-//    }
-//
-//};
+
+
 //
 //
 //
 //class Scoreboard
 //{
-//    SR_595 * output_SR;
+//    hex_display * hex_display;
 //
 //
 //  public:
 //
 //
 //    void updateLEDs(byte top, byte diamond) {
-//      output_SR->shiftOut(top);
-//      output_SR->shiftOut(diamond);
+//      hex_display->shiftOut(top);
+//      hex_display->shiftOut(diamond);
 //    }
 //
 //    byte topLEDSaccum_SO(int first, int second)
@@ -344,3 +399,32 @@ void loop(){
 //
 //
 //
+//void shiftOut(byte myDataOut) {
+//  //internal function setup
+//  int i = 0;
+//  int pinState;
+//
+//  //clear everything out just in case to
+//  //prepare shift register for bit shifting
+//  digitalWrite(dataPin, 0);
+//  digitalWrite(clockPin, 0);
+//
+//  for (i = 7; i >= 0; i--)  {
+//    digitalWrite(clockPin, 0);
+//    if ( myDataOut & (1 << i) ) {
+//      pinState = 1;
+//    }
+//    else {
+//      pinState = 0;
+//    }
+//
+//    //Sets the pin to HIGH or LOW depending on pinState
+//    digitalWrite(dataPin, pinState);
+//    //register shifts bits on upstroke of clock pin
+//    digitalWrite(clockPin, 1);
+//    //zero the data pin after shift to prevent bleed through
+//    digitalWrite(dataPin, 0);
+//  }
+//  //stop shifting
+//  digitalWrite(clockPin, 0);
+//}

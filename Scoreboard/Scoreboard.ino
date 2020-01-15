@@ -1,5 +1,16 @@
    //final
-    
+    //MSB is 
+
+    /*  data = ABCDEFGH
+     *  MSB -> LSB  
+     *       H   
+     *     ---
+     *  G | F | B
+     *     ---
+     *  E |   | C
+     *     ---  o A
+     *      D
+     */
     /*
  Controlling large 7-segment displays
  By: Nathan Seidle
@@ -32,25 +43,14 @@ void loopNumpers(int time_amt, int num_times);
 
 //GPIO declarations
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-byte segmentClock = 3;
 byte segmentLatch = 4;
+byte segmentClock = 3;
 byte segmentData = 2;
 
-//byte white_button= 2;
-//byte blue_button= 3;
-//byte red_button= 4;
-//byte yellow_button= 5;
-//byte green_button= 6;
 
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 //Button Value declarations
-int last_green_state = 1;
-int last_red_state = 1;
-int last_yellow_state = 1;
-int last_blue_state = 1;
-int last_white_state = 1;
 
-int PWM_hex =3;
  
 
 void setup()
@@ -61,7 +61,7 @@ void setup()
   pinMode(segmentClock, OUTPUT);
   pinMode(segmentData, OUTPUT);
   pinMode(segmentLatch, OUTPUT);
-  pinMode(PWM_hex, OUTPUT);
+ 
 
 //  pinMode(green_button, INPUT_PULLUP);
 //  pinMode(red_button, INPUT_PULLUP);
@@ -75,40 +75,12 @@ void setup()
   digitalWrite(segmentLatch, LOW);
 
    delay(50);
-   showBlank(400);
-
-    loopNumpers(300, 1);
-    
-  for (int i=0; i<3; i++)
-  {
-    // SAY PING
-    postNumber('g', false);
-    postNumber('n', false);
-    
-     postNumber('I', false);
-    postNumber('P', false);
-   
-    
-  
+   postNumber(9,1);
+   postNumber(3);
+   postNumber(3);
+   postNumber(3);
    LatchData(segmentLatch);
-    
-    
-    delay(1000);
-    
-    // SAY PONG
-     postNumber('g', false);
-     postNumber('n', false);
-   
-     postNumber('O', false);
-    postNumber('P', false);
-   
-   
-  
-    LatchData(segmentLatch);
-  
-    delay(1000);
-    
-}
+
  
   
   
@@ -124,7 +96,7 @@ int number_B = 0;
 
 void loop()
 {
-  digitalWrite(PWM_hex,255);
+  
 //
 //  showNumber(number_A); 
 //  showNumber(number_B); 
@@ -182,58 +154,58 @@ void loop()
 
 
 //Given a number, or '-', shifts it out to the display
-void postNumber(byte number, boolean decimal)
+void postNumber(byte number)
 {
-  //    -  A
-  //   / / F/B
-  //    -  G
-  //   / / E/C
-  //    -. D/DP
-
-#define a  1<<0
-#define b  1<<6
-#define c  1<<5
-#define d  1<<4
-#define e  1<<3
-#define f  1<<1
-#define g  1<<2
-#define dp 1<<7
-
   byte segments;
-
   switch (number)
   {
-    case 1: segments = b | c; break;
-    case 2: segments = a | b | d | e | g; break;
-    case 3: segments = a | b | c | d | g; break;
-    case 4: segments = f | g | b | c; break;
-    case 5: segments = a | f | g | c | d; break;
-    case 6: segments = a | f | g | e | c | d; break;
-    case 7: segments = a | b | c; break;
-    case 8: segments = a | b | c | d | e | f | g; break;
-    case 9: segments = a | b | c | d | f | g; break;
-    case 0: segments = a | b | c | d | e | f; break;
-    case ' ': segments = 0; break;
-    case 'c': segments = g | e | d; break;
-    case '-': segments = g; break;
-    case 'P': segments = e | f | a | b | g; break;
-    case 'I': segments = b | c; break;
-    case 'n': segments = e | a | c | f | b; break;
-    case 'g': segments = a | f | g | b | c | d; break;
-    case 'O': segments = a | b | c | d | e | f; break;
+    case 1: segments = 0b01100000; break;
+    case 2: segments = 0b01011101; break;
+    case 3: segments = 0b01110101; break;
+    case 4: segments = 0b01100110; break;
+    case 5: segments = 0b00110111; break;
+    case 6: segments = 0b00111111; break;
+    case 7: segments = 0b01100001; break;
+    case 8: segments = 0b01111111; break;
+    case 9: segments = 0b01110111; break;
+    case 0: segments = 0b01111011; break;
   }
-
-  if (decimal) segments |= dp;
-
   //Clock these bits out to the drivers
   for (byte x = 0 ; x < 8 ; x++)
   {
     digitalWrite(segmentClock, LOW);
     digitalWrite(segmentData, segments & 1 << (7 - x));
-    digitalWrite(segmentClock, HIGH); //Data transfers to the register on the rising edge of SRCK
-    
+    digitalWrite(segmentClock, HIGH); //Data transfers to the register on the rising edge of SRCK 
   }
 }
+
+void postNumber(byte number, boolean decimal)
+{
+  byte segments;
+  switch (number)
+  {
+    case 1: segments = 0b01100000; break;
+    case 2: segments = 0b01011101; break;
+    case 3: segments = 0b01110101; break;
+    case 4: segments = 0b01100110; break;
+    case 5: segments = 0b00110111; break;
+    case 6: segments = 0b00111111; break;
+    case 7: segments = 0b01100001; break;
+    case 8: segments = 0b01111111; break;
+    case 9: segments = 0b01110111; break;
+    case 0: segments = 0b01111011; break;
+  }
+  segments = segments + 0b10000000;
+  //Clock these bits out to the drivers
+  for (byte x = 0 ; x < 8 ; x++)
+  {
+    digitalWrite(segmentClock, LOW);
+    digitalWrite(segmentData, segments & 1 << (7 - x));
+    digitalWrite(segmentClock, HIGH); //Data transfers to the register on the rising edge of SRCK 
+  }
+}
+
+
 //Takes a number (-9,99) and displays on two 7-Segment Displays. Has boundary bhecks
 void showNumber(float value)
 {
