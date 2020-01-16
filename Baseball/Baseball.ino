@@ -9,68 +9,122 @@
             D
 */
 
-int analogLevel[5] = {0, 8, 128, 192, 255};
-int buttonLightsPin [2] = {6, 5};
+
+
+
 
 
 #include <SPI.h>
 class input_SR
 {
   public:
-    byte shift[2];
+    byte shift_1;
+    byte shift_2;
+
     int pressType;
+    int buttonPressed;
+    int buttonPressedTeam;
+    
     int PL;
 
     void DataShiftIn() {
       digitalWrite(PL, LOW);
       delay(1);
       digitalWrite(PL, HIGH);
-      shift[1] = SPI.transfer(0x00);
-      shift[0] = SPI.transfer(0x00);
+      shift_1 = SPI.transfer(0x00);
+      shift_2 = SPI.transfer(0x00);
     }
 
+    
     void updateStates() {
-      DataShiftIn();
-      for (int i = 0; i < 10 ; i++) {
-        prevState[i] == currState[i];
-        currState[i] = (i < 5) ?  !bitRead(shift[0], 7 - i) : !bitRead(shift[1], 7 - (i - 5));
-      }
+     
     }
 
 
-
-    int currState [10];
-    int prevState [10];
+    void init()
+    {
+      pressType=0;
+      buttonPressed=0;
+      buttonPressedTeam=-1;
+    }
+    
+    
     input_SR(int _PL) : PL(_PL) {
       pinMode(PL, OUTPUT);
       SPI.setClockDivider(SPI_CLOCK_DIV128);
       SPI.setDataMode(SPI_MODE0);
       SPI.setBitOrder(MSBFIRST);
       SPI.begin();
+      init();
     }
-    int getPressType() {
-      int time_ctr;
-      for (int i = 0; i < 10; i++) {
-        updateStates();
-        time_ctr = 0;
-        if (currState[i] == 1 && prevState[i] == 0) {
-          while (currState[i] == 1) {
-            delay(1);
-            time_ctr++;
-            updateStates();
-            if (currState[i] == 0) {
-              pressType = (i + 1);
-              return (i + 1);
-            }
-            if (time_ctr > 400) {
-              pressType = (i + 1) + 10;
-              return (i + 1) + 10;
+   
+   int getPressType() {
+      DataShiftIn();
+
+//      switch(shift_1)
+//      {
+//        case 
+//      }
+     unsigned long time_pressed;
+     unsigned long new_time_pressed;
+     int tmp;
+     if(shift_1 != 0b11111000) {
+        tmp=1;
+        bool button_release = false;
+       //Serial.println(shift_1, BIN);
+       time_pressed= millis();
+        new_time_pressed= millis();
+       analogWrite(6, 100);
+       if(shift_1 <= 0b01111000) {
+        while(shift_1 <= 0b01111000 || (millis() - time_pressed <400))
+        { 
+          if ((millis() - time_pressed) < 400){
+            if (shift_1 > 0b01111000) button_release = true;
+            if (button_release == true && shift_1 <= 0b01111000) {
+              tmp =2;
+                new_time_pressed= millis();
             }
           }
-        }
-      }
-      pressType = 0;
-      return 0;
+          else if ((millis() - time_pressed) > 600 && !button_release)
+          {
+            analogWrite(6, 100);
+          }
+          else if ((millis() - time_pressed) > 400 && !button_release) {
+            analogWrite(6, 0);
+            tmp=4;}
+          
+           else if ((millis() - new_time_pressed) > 600 && (button_release))
+          {
+            analogWrite(6, 100);
+          }
+           else if ((millis() - new_time_pressed) > 400 && ( button_release)) {
+            analogWrite(6, 0);
+            tmp=3;}
+         
+          DataShiftIn();}
+          //Serial.println(millis() - time_pressed);
+        return tmp;
+       }
+        
+       if(shift_1 <= 0b10111000) return 2;
+       if(shift_1 <= 0b11011000) return 3;
+       if(shift_1 <= 0b11101000) return 4;
+       if(shift_1 <= 0b11110000) return 5;
+       }
+       if(shift_2 != 0b11111000) {
+       //Serial.println(shift_2, BIN);
+       if(shift_2 <= 0b01111000) {
+          ;
+         while(shift_2 <= 0b01111000){DataShiftIn();} 
+         return 1;
+       }
+       if(shift_2 <= 0b10111000) return 2;
+       if(shift_2 <= 0b11011000) return 3;
+       if(shift_2 <= 0b11101000) return 4;
+       if(shift_2 <= 0b11110000) return 5;
+       }
+       return 0;
+     
     }
 };
 
@@ -298,40 +352,40 @@ hex_display hex(4, 3, 2);
 output_SR LEDs(15, 16, 17);
 void setup() {
   Serial.begin(9600);
-  pinMode(buttonLightsPin[0], OUTPUT);
-  pinMode(buttonLightsPin[1], OUTPUT);
+  pinMode(5, OUTPUT);
+  pinMode(6, OUTPUT);
 
-  analogWrite(buttonLightsPin[0], analogLevel[1]);
-  analogWrite(buttonLightsPin[1], analogLevel[3]);
-  delay(2000);
-  analogWrite(buttonLightsPin[0], analogLevel[2]);
-  delay(2000);
-  analogWrite(buttonLightsPin[0], analogLevel[1]);
+  
+  
+  analogWrite(6, 100);
 
-  digitalWrite(LEDs.latchPin, 0);
-    
-    //round LEDs
-    LEDs.shiftOut(0b111000); 
-    //base LEDs
-    LEDs.shiftOut(0b0100);
-    
-     
-    digitalWrite(LEDs.latchPin, 1);
+    Serial.println("Initialized");
 }
 
-
+int a;
 void loop() {
+a =buttons.getPressType();
 
-
-  switch (buttons.getPressType())
+  switch (a)
   {
     case 0: break;
-    default: Serial.println(buttons.pressType);
+
+    default: Serial.println(a);
+//             Serial.print("Button Pressed: ");
+//              Serial.println(buttons.buttonPressed);
+//             Serial.print("Team Button Pressed: "); 
+//              Serial.println(buttons.buttonPressedTeam);
+//             Serial.print("Press Type: ");
+//               Serial.println(buttons.pressType);
+//             Serial.print("Press Type: ");
+//               Serial.println(buttons.pressType);
+//               Serial.println();
+               break;
   }
 
 
-  hex.showNumber(35, 4);
-
+  //hex.showNumber(35, 4);
+  delay(100);
 
 
 

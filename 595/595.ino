@@ -67,8 +67,6 @@ void loop() {
     shiftOut(dataPin, clockPin,  0b111000); 
     //base LEDs
     shiftOut(dataPin, clockPin, 0b0100);
-    
-     
     digitalWrite(latchPin, 1);
 
     Serial.println();
