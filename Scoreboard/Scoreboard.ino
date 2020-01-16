@@ -68,14 +68,6 @@ void setup()
   digitalWrite(segmentData, LOW);
   digitalWrite(segmentLatch, LOW);
 
-  delay(50);
-  digitalWrite(segmentLatch, LOW);
-  postNumber('z');
-  postNumber('x');
-  postNumber('w');
-  postNumber('v');
-  digitalWrite(segmentLatch, HIGH);
-
 
 
 
@@ -85,6 +77,18 @@ void setup()
 
 void loop()
 {
+
+  delay(1500);
+  digitalWrite(segmentLatch, LOW);
+  showWord('e','c','e',' ');
+  digitalWrite(segmentLatch, HIGH);
+
+  delay(1500);
+
+  digitalWrite(segmentLatch, LOW);
+  showWord('b','o','y','s');
+  digitalWrite(segmentLatch, HIGH);
+
 
 }
 
@@ -108,9 +112,8 @@ void postNumber(byte number)
     case 0: segments = 0b01111011; break;
 
     case ' ': segments = 0b00000000; break;
-    case 'a': segments = 0b01101111; break;
-
     
+    case 'a': segments = 0b01101111; break;
     case 'b': segments = 0b00111110; break;
     case 'c': segments = 0b00011011; break;
     case 'd': segments = 0b01111100; break;
@@ -136,10 +139,8 @@ void postNumber(byte number)
     case 'x': segments = 0b01101110; break;
     case 'y': segments = 0b01110110; break;
     case 'z': segments = 0b01011101; break;
-
- 
-
   }
+  
   //Clock these bits out to the drivers
   for (byte x = 0 ; x < 8 ; x++)
   {
@@ -164,6 +165,35 @@ void postNumber(byte number, boolean decimal)
     case 8: segments = 0b01111111; break;
     case 9: segments = 0b01110111; break;
     case 0: segments = 0b01111011; break;
+
+    case ' ': segments = 0b00000000; break;
+    
+    case 'a': segments = 0b01101111; break;
+    case 'b': segments = 0b00111110; break;
+    case 'c': segments = 0b00011011; break;
+    case 'd': segments = 0b01111100; break;
+    case 'e': segments = 0b00011111; break;
+    case 'f': segments = 0b00001111; break;
+    case 'g': segments = 0b01110111; break;
+    case 'h': segments = 0b00101110; break;
+    case 'i': segments = 0b01100000; break;
+    case 'j': segments = 0b01110000; break;
+    case 'k': segments = 0b00101111; break;
+    case 'l': segments = 0b00011010; break;
+    case 'm': segments = 0b00101001; break;
+    case 'n': segments = 0b01101011; break;
+    case 'o': segments = 0b01111011; break;
+    case 'p': segments = 0b01001111; break;
+    case 'q': segments = 0b01100111; break;
+    case 'r': segments = 0b00001011; break; // make lowercase?
+    case 's': segments = 0b00110111; break;
+    case 't': segments = 0b00011110; break;
+    case 'u': segments = 0b01111010; break;
+    case 'v': segments = 0b00111000; break;
+    case 'w': segments = 0b00111001; break;
+    case 'x': segments = 0b01101110; break;
+    case 'y': segments = 0b01110110; break;
+    case 'z': segments = 0b01011101; break;
   }
   segments = segments + 0b10000000;
   //Clock these bits out to the drivers
@@ -175,7 +205,13 @@ void postNumber(byte number, boolean decimal)
   }
 }
 
-
+void showWord(byte char1, byte char2, byte char3, byte char4)
+{
+  postNumber(char4);
+  postNumber(char3);
+  postNumber(char2);
+  postNumber(char1);
+}
 
 void showNumber(float value) {
   int remainder;
@@ -204,14 +240,14 @@ void showNumber(float value1, float value2) {
 }
 
 
-void showNumber(float value1, float value2, float value3, float value4) {
-  int remainder;
-  postNumber(abs(value4));
-  postNumber(abs(value3));
-  postNumber(abs(value2));
-  postNumber(abs(value1));
-
-}
+//void showNumber(float value1, float value2, float value3, float value4) {
+//  int remainder;
+//  postNumber(abs(value4));
+//  postNumber(abs(value3));
+//  postNumber(abs(value2));
+//  postNumber(abs(value1));
+//
+//}
 
 
 

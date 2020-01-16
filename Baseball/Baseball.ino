@@ -1,9 +1,24 @@
+/*  data = ABCDEFGH
+        MSB -> LSB
+            H
+           ---
+        G | F | B
+           ---
+        E |   | C
+           ---  o A
+            D
+*/
+
+int analogLevel[5] = {0, 8, 128, 192, 255};
+int buttonLightsPin [2] = {6, 5};
+
+
 #include <SPI.h>
 class input_SR
 {
   public:
     byte shift[2];
-    
+    int pressType;
     int PL;
 
     void DataShiftIn() {
@@ -17,36 +32,44 @@ class input_SR
     void updateStates() {
       DataShiftIn();
       for (int i = 0; i < 10 ; i++) {
-        prevState[i]==currState[i];
+        prevState[i] == currState[i];
         currState[i] = (i < 5) ?  !bitRead(shift[0], 7 - i) : !bitRead(shift[1], 7 - (i - 5));
       }
     }
 
 
-  
+
     int currState [10];
     int prevState [10];
-    input_SR(int _PL) :PL(_PL) {
+    input_SR(int _PL) : PL(_PL) {
       pinMode(PL, OUTPUT);
       SPI.setClockDivider(SPI_CLOCK_DIV128);
       SPI.setDataMode(SPI_MODE0);
       SPI.setBitOrder(MSBFIRST);
-      SPI.begin();}
+      SPI.begin();
+    }
     int getPressType() {
       int time_ctr;
       for (int i = 0; i < 10; i++) {
         updateStates();
         time_ctr = 0;
-        if(currState[i]==1 && prevState[i]==0){
-        while (currState[i] == 1) {
-          delay(1);
-          time_ctr++;
-          updateStates();
-          if (currState[i] == 0) return (i + 1);
-          if (time_ctr > 400) {return (i + 1) + 10;}
+        if (currState[i] == 1 && prevState[i] == 0) {
+          while (currState[i] == 1) {
+            delay(1);
+            time_ctr++;
+            updateStates();
+            if (currState[i] == 0) {
+              pressType = (i + 1);
+              return (i + 1);
+            }
+            if (time_ctr > 400) {
+              pressType = (i + 1) + 10;
+              return (i + 1) + 10;
+            }
+          }
         }
       }
-      }
+      pressType = 0;
       return 0;
     }
 };
@@ -66,113 +89,255 @@ class hex_display
       pinMode(segmentData, OUTPUT);
     }
 
-    void LatchData()
-    {
-    digitalWrite(segmentLatch, LOW);
-    digitalWrite(segmentLatch, HIGH);
-    }
     //Given a number, or '-', shifts it out to the display
-   
-
-//Given a number, or '-', shifts it out to the display
-void postNumber(byte number, boolean decimal)
-{
-  //    -  A
-  //   / / F/B
-  //    -  G
-  //   / / E/C
-  //    -. D/DP
-
-//#define a  1<<0
-//#define b  1<<6
-//#define c  1<<5
-//#define d  1<<4
-//#define e  1<<3
-//#define f  1<<1
-//#define g  1<<2
-//#define dp 1<<7
-
-  byte segments;
-
-  switch (number)
-  {
-    case 1: segments = b | c; break;
-    case 2: segments = a | b | d | e | g; break;
-    case 3: segments = a | b | c | d | g; break;
-    case 4: segments = f | g | b | c; break;
-    case 5: segments = a | f | g | c | d; break;
-    case 6: segments = a | f | g | e | c | d; break;
-    case 7: segments = a | b | c; break;
-    case 8: segments = a | b | c | d | e | f | g; break;
-    case 9: segments = a | b | c | d | f | g; break;
-    case 0: segments = a | b | c | d | e | f; break;
-    case ' ': segments = 0; break;
-    case 'c': segments = g | e | d; break;
-    case '-': segments = g; break;
-    case 'P': segments = e | f | a | b | g; break;
-    case 'I': segments = b | c; break;
-    case 'n': segments = e | a | c | f | b; break;
-    case 'g': segments = a | f | g | b | c | d; break;
-    case 'O': segments = a | b | c | d | e | f; break;
-  }
-
-  if (decimal) segments |= dp;
-
-  //Clock these bits out to the drivers
-  for (byte x = 0 ; x < 8 ; x++)
-  {
-    digitalWrite(segmentClock, LOW);
-    digitalWrite(segmentData, segments & 1 << (7 - x));
-    digitalWrite(segmentClock, HIGH); //Data transfers to the register on the rising edge of SRCK
-    
-  }
-}
-//Takes a number (-9,99) and displays on two 7-Segment Displays. Has boundary bhecks
-void showNumber(float value)
-{
-  int negative = (value <0)? 1: 0;
-  int number = abs(value); //Remove negative signs and any decimals
-
-  //Serial.print("number: ");
-  //Serial.println(number);
-  if (negative) {
-     if (number > 9) {number = 9;}
-     postNumber(number, false);
-     postNumber('-', false);
-  }
-  else {
-     for (byte x = 0 ; x < 2 ; x++)
+    void postNumber(byte number)
     {
-      int remainder = number % 10;
-      postNumber(remainder, false);
-      number /= 10;
+      byte segments;
+      switch (number)
+      {
+        //Numbers
+        case 1: segments = 0b01100000; break;
+        case 2: segments = 0b01011101; break;
+        case 3: segments = 0b01110101; break;
+        case 4: segments = 0b01100110; break;
+        case 5: segments = 0b00110111; break;
+        case 6: segments = 0b00111111; break;
+        case 7: segments = 0b01100001; break;
+        case 8: segments = 0b01111111; break;
+        case 9: segments = 0b01110111; break;
+        case 0: segments = 0b01111011; break;
+
+        case ' ': segments = 0b00000000; break;
+
+        case 'a': segments = 0b01101111; break;
+        case 'b': segments = 0b00111110; break;
+        case 'c': segments = 0b00011011; break;
+        case 'd': segments = 0b01111100; break;
+        case 'e': segments = 0b00011111; break;
+        case 'f': segments = 0b00001111; break;
+        case 'g': segments = 0b01110111; break;
+        case 'h': segments = 0b00101110; break;
+        case 'i': segments = 0b01100000; break;
+        case 'j': segments = 0b01110000; break;
+        case 'k': segments = 0b00101111; break;
+        case 'l': segments = 0b00011010; break;
+        case 'm': segments = 0b00101001; break;
+        case 'n': segments = 0b01101011; break;
+        case 'o': segments = 0b01111011; break;
+        case 'p': segments = 0b01001111; break;
+        case 'q': segments = 0b01100111; break;
+        case 'r': segments = 0b00001011; break; // make lowercase?
+        case 's': segments = 0b00110111; break;
+        case 't': segments = 0b00011110; break;
+        case 'u': segments = 0b01111010; break;
+        case 'v': segments = 0b00111000; break;
+        case 'w': segments = 0b00111001; break;
+        case 'x': segments = 0b01101110; break;
+        case 'y': segments = 0b01110110; break;
+        case 'z': segments = 0b01011101; break;
+      }
+
+      //Clock these bits out to the drivers
+      for (byte x = 0 ; x < 8 ; x++)
+      {
+        digitalWrite(segmentClock, LOW);
+        digitalWrite(segmentData, segments & 1 << (7 - x));
+        digitalWrite(segmentClock, HIGH); //Data transfers to the register on the rising edge of SRCK
+      }
     }
-  }
+
+    void postNumber(byte number, boolean decimal)
+    {
+      byte segments;
+      switch (number)
+      {
+        case 1: segments = 0b01100000; break;
+        case 2: segments = 0b01011101; break;
+        case 3: segments = 0b01110101; break;
+        case 4: segments = 0b01100110; break;
+        case 5: segments = 0b00110111; break;
+        case 6: segments = 0b00111111; break;
+        case 7: segments = 0b01100001; break;
+        case 8: segments = 0b01111111; break;
+        case 9: segments = 0b01110111; break;
+        case 0: segments = 0b01111011; break;
+
+        case ' ': segments = 0b00000000; break;
+
+        case 'a': segments = 0b01101111; break;
+        case 'b': segments = 0b00111110; break;
+        case 'c': segments = 0b00011011; break;
+        case 'd': segments = 0b01111100; break;
+        case 'e': segments = 0b00011111; break;
+        case 'f': segments = 0b00001111; break;
+        case 'g': segments = 0b01110111; break;
+        case 'h': segments = 0b00101110; break;
+        case 'i': segments = 0b01100000; break;
+        case 'j': segments = 0b01110000; break;
+        case 'k': segments = 0b00101111; break;
+        case 'l': segments = 0b00011010; break;
+        case 'm': segments = 0b00101001; break;
+        case 'n': segments = 0b01101011; break;
+        case 'o': segments = 0b01111011; break;
+        case 'p': segments = 0b01001111; break;
+        case 'q': segments = 0b01100111; break;
+        case 'r': segments = 0b00001011; break; // make lowercase?
+        case 's': segments = 0b00110111; break;
+        case 't': segments = 0b00011110; break;
+        case 'u': segments = 0b01111010; break;
+        case 'v': segments = 0b00111000; break;
+        case 'w': segments = 0b00111001; break;
+        case 'x': segments = 0b01101110; break;
+        case 'y': segments = 0b01110110; break;
+        case 'z': segments = 0b01011101; break;
+      }
+      segments = segments + 0b10000000;
+      //Clock these bits out to the drivers
+      for (byte x = 0 ; x < 8 ; x++)
+      {
+        digitalWrite(segmentClock, LOW);
+        digitalWrite(segmentData, segments & 1 << (7 - x));
+        digitalWrite(segmentClock, HIGH); //Data transfers to the register on the rising edge of SRCK
+      }
+    }
+
+    void showWord(byte char1, byte char2, byte char3, byte char4)
+    {
+      digitalWrite(segmentLatch, LOW);
+      postNumber(char4);
+      postNumber(char3);
+      postNumber(char2);
+      postNumber(char1);
+      digitalWrite(segmentLatch, HIGH);
+    }
+
+    void showNumber(float value) {
+      int remainder;
+      int number = abs(value);
+      digitalWrite(segmentLatch, LOW);
+      for (byte x = 0 ; x < 4 ; x++) {
+        remainder = number % 10;
+        postNumber(remainder);
+        number /= 10;
+      }
+      digitalWrite(segmentLatch, HIGH);
+    }
+
+    void showNumber(float value1, float value2) {
+      int remainder;
+      int number = abs(value2);
+      digitalWrite(segmentLatch, LOW);
+      for (byte x = 0 ; x < 2 ; x++) {
+        remainder = number % 10;
+        postNumber(remainder);
+        number /= 10;
+      }
+      number = abs(value1);
+      for (byte x = 0 ; x < 2 ; x++) {
+        remainder = number % 10;
+        postNumber(remainder);
+        number /= 10;
+      }
+      digitalWrite(segmentLatch, HIGH);
+    }
+
+
 };
 
+class output_SR
+{
+  public:
+    int latchPin;
+    int clockPin;
+    int dataPin;
+    output_SR(int _latchPin, int _clockPin, int _dataPin):
+      latchPin(_latchPin), clockPin(_clockPin), dataPin(_dataPin)
+    {
+      pinMode(latchPin, OUTPUT);
+      pinMode(clockPin, OUTPUT);
+      pinMode(dataPin, OUTPUT);
+    }
 
+    void shiftOut(byte data) {
+
+      //internal function setup
+      int i = 0;
+      int pinState;
+      pinMode(clockPin, OUTPUT);
+      pinMode(dataPin, OUTPUT);
+
+      //clear everything out
+      digitalWrite(dataPin, 0);
+      digitalWrite(clockPin, 0);
+
+      for (i = 7; i >= 0; i--)  {
+        digitalWrite(clockPin, 0);
+        if ( data & (1 << i) ) {
+          pinState = 1;
+        }
+        else {
+          pinState = 0;
+        }
+
+        //Sets the pin to HIGH or LOW depending on pinState
+        digitalWrite(dataPin, pinState);
+        //register shifts bits on upstroke of clock pin
+        digitalWrite(clockPin, 1);
+        //zero the data pin after shift to prevent bleed through
+        digitalWrite(dataPin, 0);
+      }
+
+      //stop shifting
+      digitalWrite(clockPin, 0);
+    }
+
+};
 
 input_SR buttons(8);
-hex_display hex(4,3,2);
-
-void setup(){
+hex_display hex(4, 3, 2);
+output_SR LEDs(15, 16, 17);
+void setup() {
   Serial.begin(9600);
- 
-  }
-  int a1;
-void loop(){
+  pinMode(buttonLightsPin[0], OUTPUT);
+  pinMode(buttonLightsPin[1], OUTPUT);
 
- 
-  a1 =buttons.getPressType();
-  if(a1!=0){Serial.println(a1);}
-  hex.showNumber(3,4);
-  hex.LatchData();
-  delay(1000);
-  
-  
-  
-  
+  analogWrite(buttonLightsPin[0], analogLevel[1]);
+  analogWrite(buttonLightsPin[1], analogLevel[3]);
+  delay(2000);
+  analogWrite(buttonLightsPin[0], analogLevel[2]);
+  delay(2000);
+  analogWrite(buttonLightsPin[0], analogLevel[1]);
+
+  digitalWrite(LEDs.latchPin, 0);
+    
+    //round LEDs
+    LEDs.shiftOut(0b111000); 
+    //base LEDs
+    LEDs.shiftOut(0b0100);
+    
+     
+    digitalWrite(LEDs.latchPin, 1);
+}
+
+
+void loop() {
+
+
+  switch (buttons.getPressType())
+  {
+    case 0: break;
+    default: Serial.println(buttons.pressType);
   }
+
+
+  hex.showNumber(35, 4);
+
+
+
+
+
+
+}
 
 
 
