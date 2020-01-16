@@ -60,11 +60,6 @@ class input_SR
    
    int getPressType() {
       DataShiftIn();
-
-//      switch(shift_1)
-//      {
-//        case 
-//      }
      unsigned long time_pressed;
      unsigned long new_time_pressed;
      int tmp;
@@ -73,7 +68,7 @@ class input_SR
         bool button_release = false;
        //Serial.println(shift_1, BIN);
        time_pressed= millis();
-        new_time_pressed= millis();
+       new_time_pressed= millis();
        analogWrite(6, 100);
        if(shift_1 <= 0b01111000) {
         while(shift_1 <= 0b01111000 || (millis() - time_pressed <400))
