@@ -12,6 +12,9 @@
 
 
 
+
+
+
 #define none_pressed  0b11111000
 
 #include <SPI.h>
@@ -217,7 +220,6 @@ class input_SR
         }
       }
       analogWrite(6, 100);
-      //Serial.println(timeThresholdMet(time_pressed, 400));
       debugPress(0);
     }
 
@@ -399,6 +401,7 @@ class output_SR
     int latchPin;
     int clockPin;
     int dataPin;
+      
     output_SR(int _latchPin, int _clockPin, int _dataPin):
       latchPin(_latchPin), clockPin(_clockPin), dataPin(_dataPin)
     {
@@ -406,7 +409,16 @@ class output_SR
       pinMode(clockPin, OUTPUT);
       pinMode(dataPin, OUTPUT);
     }
-
+    //data1 = TOP
+    //data2 = BASES
+    void updateLEDs(byte data1, byte data2)
+    {
+       digitalWrite(latchPin, 0);
+       shiftOut(data1);
+       shiftOut(data2);
+       digitalWrite(latchPin, 1);
+      
+    }
     void shiftOut(byte data) {
 
       //internal function setup
@@ -442,9 +454,108 @@ class output_SR
 
 };
 
+
+class Baseball{
+  public:
+  int outs;
+  int strikes;
+  
+  byte bases;
+  int pressType;
+
+  int add_runs;
+  int team1_runs, team2_runs;
+  int curr_team;
+
+  input_SR * buttons;
+  hex_display * hex;
+  output_SR * LEDs;
+
+ Baseball( input_SR * _buttons, hex_display * _hex, output_SR * _LEDs): buttons(_buttons), hex(_hex), LEDs(_LEDs)
+ {
+  LEDs->updateLEDs(0b011010,0b0111);
+  }
+
+ 
+  void initGame()
+  {
+    
+    outs =0;
+    strikes =0;
+    bases =0b0000;
+    curr_team = 0;
+    team1_runs = 0;
+    team2_runs = 0;
+    add_runs = 0;
+
+    hex->showWord('b','a','s','e');
+    delay(400);
+    hex->showWord('b','a','l','l');
+    delay(400);
+  }
+  
+  void updateGame()
+  {
+     buttons->getPressType();
+  }
+
+  int CountRunners(byte bases){ return (bases==0)? 0: (bases & 1) + CountRunners(bases >> 1);}
+
+
+  //void updateGameStatus()
+  
+  void update_bases() {
+  byte new_bases = bases;
+  add_runs = 0;
+  switch (buttons->buttonPressed) {
+    case 1: // Single
+      switch (bases) {
+        case 0b000:
+          new_bases = 0b100;
+          break;
+        case 0b001:
+          new_bases = 0b101;
+          break;
+        case 0b100: case 0b010:
+          new_bases = 0b110;
+          break;
+        default:
+          new_bases = 0b111;
+          break;
+      }
+      break;
+
+    case 2: // Double
+      switch (bases) {
+        case 0b000:
+          new_bases = 0b010;
+          break;
+        default:
+          new_bases = 0b011;
+          break;
+      }
+      break;
+
+    case 3: // Triple
+      new_bases = 0b001;
+      break;
+
+    case 4: // HomeRun
+      new_bases = 0b000;
+      break;
+  }
+  if (buttons->buttonPressed != 0 && buttons->buttonPressed != 5)
+    add_runs = CountRunners(bases) + 1 - CountRunners(new_bases);
+  bases = new_bases;
+}
+};
+
+
 input_SR buttons(8, 6, 5);
 hex_display hex(4, 3, 2);
 output_SR LEDs(15, 16, 17);
+Baseball baseballGame(&buttons, &hex, &LEDs);
+
 void setup() {
   Serial.begin(9600);
 
@@ -459,16 +570,16 @@ int number1 = 0;
 int number2 = 0;
 void loop() {
   buttons.getPressType();
- number1 = number1 + buttons.pressType;
+ if (buttons.buttonPressed != 0) number1 = number1 + (buttons.pressType)*buttons.buttonPressed;
     if (buttons.pressHold == 1) number2 ++;
 
   //buttons.debugPress(0);
 
 
-
+  
 
   hex.showNumber(number2, number1);
-  delay(100);
+  delay(10);
 
 
 
@@ -603,50 +714,7 @@ void loop() {
 //  return (bases == 0) ? 0 : (bases & 1) + CountRunners(bases >> 1);
 //}
 //
-//void update_bases(byte& bases, int press_type, int& add_runs) {
-//  byte new_bases = bases;
-//  add_runs = 0;
-//  switch (press_type) {
-//    case 1: // Single
-//      switch (bases) {
-//        case 0b000:
-//          new_bases = 0b100;
-//          break;
-//        case 0b001:
-//          new_bases = 0b101;
-//          break;
-//        case 0b100: case 0b010:
-//          new_bases = 0b110;
-//          break;
-//        default:
-//          new_bases = 0b111;
-//          break;
-//      }
-//      break;
-//
-//    case 2: // Double
-//      switch (bases) {
-//        case 0b000:
-//          new_bases = 0b010;
-//          break;
-//        default:
-//          new_bases = 0b011;
-//          break;
-//      }
-//      break;
-//
-//    case 3: // Triple
-//      new_bases = 0b001;
-//      break;
-//
-//    case 4: // HomeRun
-//      new_bases = 0b000;
-//      break;
-//  }
-//  if (press_type != 0 && press_type != 5)
-//    add_runs = CountRunners(bases) + 1 - CountRunners(new_bases);
-//  bases = new_bases;
-//}
+
 //
 //
 //
@@ -654,16 +722,7 @@ void loop() {
 //void loop() {
 //
 //
-//
-//  // Data gathering
-//
-//
-//  button_curr[0] = !digitalRead(green);
-//  button_curr[1] = !digitalRead(red);
-//  button_curr[2] = !digitalRead(blue);
-//  button_curr[3] = !digitalRead(yellow);
-//  button_curr[4] = !digitalRead(white);
-//
+
 //  press_type = press_code(button_curr, button_prev);
 //
 //  print_action(press_type);
@@ -701,32 +760,3 @@ void loop() {
 //
 //
 //
-//void shiftOut(byte myDataOut) {
-//  //internal function setup
-//  int i = 0;
-//  int pinState;
-//
-//  //clear everything out just in case to
-//  //prepare shift register for bit shifting
-//  digitalWrite(dataPin, 0);
-//  digitalWrite(clockPin, 0);
-//
-//  for (i = 7; i >= 0; i--)  {
-//    digitalWrite(clockPin, 0);
-//    if ( myDataOut & (1 << i) ) {
-//      pinState = 1;
-//    }
-//    else {
-//      pinState = 0;
-//    }
-//
-//    //Sets the pin to HIGH or LOW depending on pinState
-//    digitalWrite(dataPin, pinState);
-//    //register shifts bits on upstroke of clock pin
-//    digitalWrite(clockPin, 1);
-//    //zero the data pin after shift to prevent bleed through
-//    digitalWrite(dataPin, 0);
-//  }
-//  //stop shifting
-//  digitalWrite(clockPin, 0);
-//}
