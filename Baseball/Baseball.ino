@@ -186,7 +186,7 @@ class input_SR
         time_pressed = millis();
         analogWrite(6, 100);
 
-        while (currButtonPressed() || !timeThresholdMet(time_pressed, 400))
+        while (currButtonPressed() || !timeThresholdMet(time_pressed, 300))
         {
           if (!button_release)
           {
@@ -204,18 +204,19 @@ class input_SR
               time_pressed = millis();
             }
           }
-          if (timeThresholdMet(time_pressed, 400, 600)) {
+          if (timeThresholdMet(time_pressed, 300, 500)) {
             //Serial.println("hold");
             analogWrite(6, 0);
             pressHold = 1;
           }
-          if (timeThresholdMet(time_pressed, 600)) {
+          if (timeThresholdMet(time_pressed, 500)) {
             analogWrite(6, 100);
           }
 
           DataShiftIn();
         }
       }
+      analogWrite(6, 100);
       //Serial.println(timeThresholdMet(time_pressed, 400));
       debugPress(0);
     }
@@ -454,16 +455,19 @@ void setup() {
   Serial.println("Initialized");
 }
 
-
+int number1 = 0;
+int number2 = 0;
 void loop() {
   buttons.getPressType();
+ number1 = number1 + buttons.pressType;
+    if (buttons.pressHold == 1) number2 ++;
 
   //buttons.debugPress(0);
 
 
 
 
-  hex.showNumber(35, 4);
+  hex.showNumber(number2, number1);
   delay(100);
 
 
