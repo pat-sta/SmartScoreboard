@@ -189,7 +189,7 @@ class input_SR
         time_pressed = millis();
         analogWrite(6, 100);
 
-        while (currButtonPressed() || !timeThresholdMet(time_pressed, 300))
+        while (currButtonPressed() || !timeThresholdMet(time_pressed, 400))
         {
           if (!button_release)
           {
@@ -207,12 +207,12 @@ class input_SR
               time_pressed = millis();
             }
           }
-          if (timeThresholdMet(time_pressed, 300, 500)) {
+          if (timeThresholdMet(time_pressed, 400, 600)) {
             //Serial.println("hold");
             analogWrite(6, 0);
             pressHold = 1;
           }
-          if (timeThresholdMet(time_pressed, 500)) {
+          if (timeThresholdMet(time_pressed, 600)) {
             analogWrite(6, 100);
           }
 
@@ -220,7 +220,7 @@ class input_SR
         }
       }
       analogWrite(6, 100);
-      debugPress(0);
+      //debugPress(0);
     }
 
 };
@@ -459,12 +459,14 @@ class Baseball{
   public:
   int outs;
   int strikes;
-  
   byte bases;
-  int pressType;
+  
+ int StrikeOut_SO;
 
   int add_runs;
-  int team1_runs, team2_runs;
+  int t1_runs, t2_runs;
+  
+  int pressID;
   int curr_team;
 
   input_SR * buttons;
@@ -473,43 +475,144 @@ class Baseball{
 
  Baseball( input_SR * _buttons, hex_display * _hex, output_SR * _LEDs): buttons(_buttons), hex(_hex), LEDs(_LEDs)
  {
-  LEDs->updateLEDs(0b011010,0b0111);
+  
+  
   }
 
- 
+  void extractPressType()
+  {
+    int pressType = buttons->pressType;
+    int pressHold = buttons->pressHold;
+    int buttonPressed = buttons->buttonPressed;
+    int buttonPressedTeam= buttons-> buttonPressedTeam;
+  // if (buttonPressed !=0) Serial.println(pressType);
+    switch (buttonPressed)
+    {
+      case 0: pressID =0;
+        break;
+      // Single
+      case 1: pressID = 1;
+      Serial.println("Single");
+           break;
+       // Double
+      case 2: pressID =2;
+      Serial.println("Double");
+        break;
+       // Triple
+      case 3: pressID =3;
+      Serial.println("Triple");
+        break;
+       // Homerun
+      case 4: pressID =4;
+      Serial.println("Home Run");
+        break; 
+       
+      case 5:
+        if(pressType== 1){
+          pressID = 5;
+          Serial.println("Strike");
+        }
+       
+        else if (pressType == 2){
+          pressID = 6;
+          Serial.println("Out");
+        }
+        break;
+    }
+    
+  }
   void initGame()
   {
     
     outs =0;
     strikes =0;
     bases =0b0000;
-    curr_team = 0;
-    team1_runs = 0;
-    team2_runs = 0;
+    curr_team = 1;
+    t1_runs = 0;
+    t2_runs = 0;
     add_runs = 0;
 
     hex->showWord('b','a','s','e');
-    delay(400);
+    delay(700);
     hex->showWord('b','a','l','l');
-    delay(400);
+    delay(700);
   }
-  
+
+  void changePosession(){
+    Serial.println("Changed Posession");
+   
+    outs =0;
+    strikes =0;
+    bases =0b0000;
+    curr_team = (curr_team == 1 )? 2 : 1;
+     Serial.print("Batting: Team ");
+     Serial.println(curr_team);
+     }
+
+  void updateGameStatus(){
+    if (pressID == 5)
+    {
+      strikes ++;
+      Serial.println(strikes);
+    }
+    if (pressID == 6)
+    {
+      strikes =0;
+      outs ++;
+      
+    }
+    if (strikes == 3){
+      strikes = 0;
+      outs ++;
+    }
+    if (outs == 3) {
+      strikes = 0;
+      outs = 0;
+      changePosession();
+    }
+    }
+  void updateButtonLights(){
+    switch(curr_team)
+    {
+      case 0:
+        //buttons->set_LED_brightness(0,0);
+        break;
+      case 1:
+        //buttons->set_LED_brightness(150,30);
+         break;
+      case 2:
+       // buttons->set_LED_brightness(150,30);
+        //buttons->set_LED_brightness(30,150);
+         break;
+      default: break;
+    }
+    }
   void updateGame()
   {
      buttons->getPressType();
+     extractPressType();
+     updateGameStatus();
+     updateBases();
+     
+     LEDs->updateLEDs(StrikeOut_SO, bases);
+     updateButtonLights();
+     hex->showNumber(t1_runs,t2_runs);
   }
 
   int CountRunners(byte bases){ return (bases==0)? 0: (bases & 1) + CountRunners(bases >> 1);}
 
 
-  //void updateGameStatus()
   
-  void update_bases() {
+  
+  void updateBases() {
   byte new_bases = bases;
   add_runs = 0;
-  switch (buttons->buttonPressed) {
+   
+  switch (pressID) {
     case 1: // Single
+    Serial.println("Here");
       switch (bases) {
+       
         case 0b000:
           new_bases = 0b100;
           break;
@@ -526,6 +629,7 @@ class Baseball{
       break;
 
     case 2: // Double
+    //Serial.println("Here");
       switch (bases) {
         case 0b000:
           new_bases = 0b010;
@@ -537,10 +641,12 @@ class Baseball{
       break;
 
     case 3: // Triple
+    //Serial.println("Here");
       new_bases = 0b001;
       break;
 
     case 4: // HomeRun
+    //Serial.println("Here");
       new_bases = 0b000;
       break;
   }
@@ -551,10 +657,10 @@ class Baseball{
 };
 
 
-input_SR buttons(8, 6, 5);
-hex_display hex(4, 3, 2);
-output_SR LEDs(15, 16, 17);
-Baseball baseballGame(&buttons, &hex, &LEDs);
+input_SR buttons_inst(8, 6, 5);
+hex_display hex_inst(4, 3, 2);
+output_SR LEDs_inst(15, 16, 17);
+Baseball baseball_inst(&buttons_inst, &hex_inst, &LEDs_inst);
 
 void setup() {
   Serial.begin(9600);
@@ -569,16 +675,15 @@ void setup() {
 int number1 = 0;
 int number2 = 0;
 void loop() {
-  buttons.getPressType();
- if (buttons.buttonPressed != 0) number1 = number1 + (buttons.pressType)*buttons.buttonPressed;
-    if (buttons.pressHold == 1) number2 ++;
-
-  //buttons.debugPress(0);
-
+  delay(300);
+  baseball_inst.initGame();
+  while(1){
+  baseball_inst.updateGame();
+    };
 
   
 
-  hex.showNumber(number2, number1);
+ 
   delay(10);
 
 
