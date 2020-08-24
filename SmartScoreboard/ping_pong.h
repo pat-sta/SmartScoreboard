@@ -34,10 +34,10 @@ class ping_pong {
       t2_round=0;
       team_pos=0;
       
-      hex->showWord('p', 'i', 'n', 'g');
-      delay(700);
-      hex->showWord('p', 'o', 'n', 'g');
-      delay(700);
+//      hex->showWord('p', 'i', 'n', 'g');
+//      delay(700);
+//      hex->showWord('p', 'o', 'n', 'g');
+//      delay(700);
     }
 
     
@@ -92,6 +92,14 @@ class ping_pong {
      void updateScoreboard()
     {
        hex->showNumber(t1_score,t2_score);
+//       hex->setWord(0,3,0,4);
+//       hex->addDecimal(1);
+//       hex->updateDisplay();
+//      delay(1000);
+//       hex->setWord(0,3,0,4);
+//       hex->addDecimal(3);
+//       hex->updateDisplay();
+//       delay(1000);
     
     }
 
