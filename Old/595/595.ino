@@ -16,7 +16,6 @@ int clockPin = 16; //green
 int dataPin = 17; //blue
 
 
-
 void setup() {
   //Start Serial for debuging purposes  
   Serial.begin(9600);
