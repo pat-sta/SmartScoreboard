@@ -19,7 +19,7 @@ void setup() {
   //Start Serial for debuging purposes
   Serial.begin(9600);
  //baseball_inst.initGame();
- pingpong_inst.initGame();
+ //pingpong_inst.initGame();
  //clk_module_inst.initGame();
 }
 
@@ -29,7 +29,14 @@ void loop() {
   //baseball_inst.updateGame();
  //analogWrite(6, 255);
 //analogWrite(5, 255);
-pingpong_inst.updateGame();
+
+ pingpong_inst.initGame();
+while(pingpong_inst.updateGame()){}
+ clk_module_inst.initGame();
+while(clk_module_inst.updateGame()){}
+
+
+
 //clk_module_inst.updateGame();
 
   delay(50);

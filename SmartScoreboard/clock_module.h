@@ -44,20 +44,25 @@ int weekday(){
 
 
 void initGame(){
-      hex->showWord('p', 'i', 'n', 'g');
-      delay(700);
+      hex->showWord(' ', ' ', ' ', ' ');
+      delay(300);
+      hex->showWord('c', 'l', 'c', 'k');
+      delay(1400);
+      hex->showWord(' ', ' ', ' ', ' ');
+      delay(300);
       Wire.begin();
       DS3231_init(DS3231_CONTROL_INTCN);
     }
 
-   void updateGame(){
+    bool updateGame(){
       extractPressType();
-      updateGameStatus();
+      if(!updateGameStatus()) {return false;}
       updateScoreboard();
+      return true;
     }
 
 
-   void updateGameStatus(){
+   bool updateGameStatus(){
       DS3231_get(&t);
       t.hour = t.hour < 13 ? (t.hour) : (t.hour - 12);
       dayofweek = weekday();  
@@ -72,7 +77,9 @@ void initGame(){
     else if(dayofweek=4){ top_leds = 0b000100; }
     else if(dayofweek=5){ top_leds = 0b000010; }
     else if(dayofweek=6){ top_leds = 0b000001; }
-   
+    if(buttonPressed==5 && pressType==3){return false;}
+      return true;
+       
     }
 
 void updateScoreboard(){

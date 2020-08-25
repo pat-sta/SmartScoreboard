@@ -9,7 +9,10 @@ class Baseball {
     int add_runs;
     int t1_runs, t2_runs;
 
-    int pressID;
+    int pressType;
+    int buttonPressed;
+    int buttonPressedTeam;
+    
     int curr_team;
 
     input_SR * buttons;
@@ -23,49 +26,69 @@ class Baseball {
     return 8 * en;
   }
 
-    void extractPressType()
-    {
-      int pressType = buttons->pressType;
-      
-      int buttonPressed = buttons->buttonPressed;
-      int buttonPressedTeam = buttons-> buttonPressedTeam;
-      // if (buttonPressed !=0) Serial.println(pressType);
-      switch (buttonPressed)
-      {
-        case 0: pressID = 0;
-          break;
-        // Single
-        case 1: pressID = 1;
-          Serial.println("Single");
-          break;
-        // Double
-        case 2: pressID = 2;
-          Serial.println("Double");
-          break;
-        // Triple
-        case 3: pressID = 3;
-          Serial.println("Triple");
-          break;
-        // Homerun
-        case 4: pressID = 4;
-          Serial.println("Home Run");
-          break;
-        case 5:
-          if (pressType == 1) {
-            pressID = 5;
-            Serial.println("Strike");
-          }
-          else if (pressType == 2) {
-            pressID = 6;
-            Serial.println("Out");
-          }
-          break;
-      }
 
+ void extractPressType(){
+      buttons->getPressType();
+      pressType = buttons->pressType;
+      buttonPressed = buttons->buttonPressed;
+      buttonPressedTeam = buttons-> buttonPressedTeam;
     }
-    void initGame()
-    {
 
+    void foul(){
+      
+    }
+     void strike(){
+      
+    }
+
+    void singleHit(){
+      
+    }
+
+    void doubleHit(){
+      
+    }
+
+    void tripleHit(){
+      
+    }
+
+    void homerunHit(){
+      
+    }
+void updateGameStatus() {
+//      if (pressID == 5){
+//        strikes ++;
+//        Serial.println(strikes);
+//      }
+//      if (pressID == 6){
+//        strikes = 0;
+//        outs ++;
+//      }
+//      if (strikes == 3) {
+//        strikes = 0;
+//        outs ++;
+//      }
+//      if (outs == 3) {
+//        strikes = 0;
+//        outs = 0;
+//        changePosession();
+//      }
+    }
+
+      void updateScoreboard()
+    {
+       //hex->showNumber(t1_score,t2_score);
+    
+    }
+    
+ void updateGame(){
+      extractPressType();
+      updateGameStatus();
+      updateScoreboard();
+    }
+
+    void initGame(){
       outs = 0;
       strikes = 0;
       bases = 0b0000;
@@ -90,25 +113,7 @@ class Baseball {
       Serial.println(curr_team);
     }
 
-    void updateGameStatus() {
-      if (pressID == 5){
-        strikes ++;
-        Serial.println(strikes);
-      }
-      if (pressID == 6){
-        strikes = 0;
-        outs ++;
-      }
-      if (strikes == 3) {
-        strikes = 0;
-        outs ++;
-      }
-      if (outs == 3) {
-        strikes = 0;
-        outs = 0;
-        changePosession();
-      }
-    }
+    
     void updateButtonLights() {
       switch (curr_team)
       {
@@ -125,18 +130,7 @@ class Baseball {
         default: break;
       }
     }
-    void updateGame()
-    {
-      buttons->getPressType();
-      extractPressType();
-      updateGameStatus();
-      updateBases();
-
-      LEDs->updateLEDs(StrikeOut_SO, bases);
-      updateButtonLights();
-      //hex->showNumber(t1_runs, t2_runs);
-      hex->showNumber(2, t2_runs);
-    }
+  
 
     int CountRunners(byte bases) {
       return (bases == 0) ? 0 : (bases & 1) + CountRunners(bases >> 1);
@@ -147,49 +141,49 @@ class Baseball {
       add_runs = 0;
 
     
-      switch (pressID) {
-        case 1: // Single
-          Serial.println("Here");
-          switch (bases) {
-            case 0b000:
-              new_bases = 0b100;
-              break;
-            case 0b001:
-              new_bases = 0b101;
-              break;
-            case 0b100: case 0b010:
-              new_bases = 0b110;
-              break;
-            default:
-              new_bases = 0b111;
-              break;
-          }
-          break;
-
-        case 2: // Double
-          //Serial.println("Here");
-          switch (bases) {
-            case 0b000:
-              new_bases = 0b010;
-              break;
-            default:
-              new_bases = 0b011;
-              break;
-          }
-          break;
-
-        case 3: // Triple
-          //Serial.println("Here");
-          new_bases = 0b001;
-          break;
-
-        case 4: // HomeRun
-          //Serial.println("Here");
-          new_bases = 0b000;
-          break;
-      }
-      if (buttons->buttonPressed != 0 && buttons->buttonPressed != 5)
-        add_runs = CountRunners(bases) + 1 - CountRunners(new_bases);
-      bases = new_bases;
+//      switch (pressID) {
+//        case 1: // Single
+//          Serial.println("Here");
+//          switch (bases) {
+//            case 0b000:
+//              new_bases = 0b100;
+//              break;
+//            case 0b001:
+//              new_bases = 0b101;
+//              break;
+//            case 0b100: case 0b010:
+//              new_bases = 0b110;
+//              break;
+//            default:
+//              new_bases = 0b111;
+//              break;
+//          }
+//          break;
+//
+//        case 2: // Double
+//          //Serial.println("Here");
+//          switch (bases) {
+//            case 0b000:
+//              new_bases = 0b010;
+//              break;
+//            default:
+//              new_bases = 0b011;
+//              break;
+//          }
+//          break;
+//
+//        case 3: // Triple
+//          //Serial.println("Here");
+//          new_bases = 0b001;
+//          break;
+//
+//        case 4: // HomeRun
+//          //Serial.println("Here");
+//          new_bases = 0b000;
+//          break;
+//      }
+//      if (buttons->buttonPressed != 0 && buttons->buttonPressed != 5)
+//        add_runs = CountRunners(bases) + 1 - CountRunners(new_bases);
+//      bases = new_bases;
     }
 };

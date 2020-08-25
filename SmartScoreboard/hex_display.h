@@ -184,19 +184,40 @@ class hex_display
       postNumberData[2]= dataToSegments(char2);
       postNumberData[3]= dataToSegments(char3);
   }
-//void showNumber(float value) {
-//      int remainder;
-//      if (value <0) {value =0;}
-//      if (value >99) {value =99;}
-//      int number = abs(value);
-//      digitalWrite(segmentLatch, LOW);
-//      for (byte x = 0 ; x < 4 ; x++) {
-//        remainder = number % 10;
-//        postNumber(remainder);
-//        number /= 10;
-//      }
-//      digitalWrite(segmentLatch, HIGH);
-//    }
+
+
+void setNumber(float value) {
+      int remainder;
+      if (value <0) {value =0;}
+      if (value >9999) {value =9999;}
+      int number = abs(value);
+      for (byte x = 0 ; x < 4 ; x++) {
+        remainder = number % 10;
+        postNumberData[3-x]= dataToSegments(remainder);
+        number /= 10;
+      }
+    }
+
+ void setNumber(float value1, float value2) {
+      int remainder;
+      int number;
+      
+      for (byte x = 0 ; x < 4 ; x++) {
+        if(x==0){
+          number = value2;
+           if (number <0) {number =0;}
+           if (number >99) {number =99;}
+         }
+        if(x==2){
+          number = value1;
+          if (number <0) {number =0;}
+          if (number >99) {number =99;}
+         }
+        remainder = number % 10;
+        postNumberData[3-x]= dataToSegments(remainder);
+        number /= 10;
+      }
+ }
     
   void addDecimal(int pos){
     if (!bitRead(postNumberData[pos],7)){ postNumberData[pos]+= 0b10000000;}   
@@ -208,7 +229,6 @@ void updateDisplay(){
      for(int i=0; i <4; i++){
       segments = postNumberData[3-i];
       Serial.println(segments);
-      delay(100);
       for (byte x = 0 ; x < 8 ; x++){
         digitalWrite(segmentClock, LOW);
         digitalWrite(segmentData, segments & 1 << (7 - x));
