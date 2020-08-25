@@ -8,6 +8,7 @@
 
 
 
+
 input_SR buttons_inst(8, 6, 5);
 hex_display hex_inst(4, 3, 2);
 output_SR LEDs_inst(15, 16, 17);
@@ -21,6 +22,7 @@ void setup() {
  //baseball_inst.initGame();
  //pingpong_inst.initGame();
  //clk_module_inst.initGame();
+ 
 }
 
 
@@ -30,8 +32,8 @@ void loop() {
  //analogWrite(6, 255);
 //analogWrite(5, 255);
 
- pingpong_inst.initGame();
-while(pingpong_inst.updateGame()){}
+// pingpong_inst.initGame();
+//while(pingpong_inst.updateGame()){}
  clk_module_inst.initGame();
 while(clk_module_inst.updateGame()){}
 

@@ -145,7 +145,7 @@ class input_SR
       extractButtonInfo();
       unsigned long time_pressed;
       int short_threshold = 400;
-      int long_threshold=1500;
+      int long_threshold=1200;
       pressType = 0;
       digitalWrite(6, HIGH);
       time_pressed = millis();

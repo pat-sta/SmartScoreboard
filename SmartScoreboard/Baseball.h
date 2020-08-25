@@ -4,7 +4,8 @@ class Baseball {
     int strikes;
     byte bases;
 
-    int StrikeOut_SO;
+    byte top_leds;
+    byte diamond_leds;
 
     int add_runs;
     int t1_runs, t2_runs;
@@ -18,13 +19,15 @@ class Baseball {
     input_SR * buttons;
     hex_display * hex;
     output_SR * LEDs;
-
+   
+    
     Baseball( input_SR * _buttons, hex_display * _hex, output_SR * _LEDs): buttons(_buttons), hex(_hex), LEDs(_LEDs)
     {
     }
     int enable_home(int en) {
     return 8 * en;
   }
+
 
 
  void extractPressType(){
