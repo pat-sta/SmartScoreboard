@@ -56,7 +56,9 @@ void debug_animation_all(){
 
 void debug_animation(byte _base, int _hit, int _instance){
 
-      
+      hex->setWord(' ', ' ', ' ', ' ');
+       hex->updateDisplay();
+       delay(500);
        LEDs->updateLEDs(0, _base);
        base_animations.init_animation(_base,_hit);
        hex->setNumber(_instance,_hit);
@@ -73,12 +75,17 @@ void debug_animation(byte _base, int _hit, int _instance){
       }
       else break;
      }
+     delay(500);
   
 }
 
 void initGame(){
     
-    debug_animation_all();
+    //debug_animation_all();
+    //debug_animation(0b1010,1,0);
+    debug_animation(0b1111,2,0);
+//    debug_animation(0b1001,3,0);
+//    debug_animation(0b1001,4,0);
 
   
       hex->showWord(' ', ' ', ' ', ' ');
