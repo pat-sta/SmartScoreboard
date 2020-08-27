@@ -32,10 +32,10 @@ void loop() {
  //analogWrite(6, 255);
 //analogWrite(5, 255);
 
-// pingpong_inst.initGame();
+ //pingpong_inst.initGame();
 //while(pingpong_inst.updateGame()){}
  clk_module_inst.initGame();
-while(clk_module_inst.updateGame()){}
+//while(clk_module_inst.updateGame()){}
 
 
 

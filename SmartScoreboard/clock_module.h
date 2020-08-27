@@ -81,11 +81,12 @@ void debug_animation(byte _base, int _hit, int _instance){
 
 void initGame(){
     
-    //debug_animation_all();
-    //debug_animation(0b1010,1,0);
-    debug_animation(0b1111,2,0);
-//    debug_animation(0b1001,3,0);
-//    debug_animation(0b1001,4,0);
+    debug_animation_all();
+//    //debug_animation(0b1010,1,0);
+//    //debug_animation(0b1111,1,0);
+//    debug_animation(0b1011,4,0);
+////    debug_animation(0b1001,3,0);
+////    debug_animation(0b1001,4,0);
 
   
       hex->showWord(' ', ' ', ' ', ' ');
