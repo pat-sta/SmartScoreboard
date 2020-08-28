@@ -1,3 +1,6 @@
+#ifndef INPUT_SR_H
+#define INPUT_SR_H
+
 #include <SPI.h>
 #include <Wire.h>
 class input_SR
@@ -179,3 +182,5 @@ class input_SR
       //debugPress(0);
     }
 };
+
+#endif

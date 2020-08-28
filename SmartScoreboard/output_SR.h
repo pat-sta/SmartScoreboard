@@ -1,3 +1,5 @@
+#ifndef OUTPUT_SR_H
+#define OUTPUT_SR_H
 
 class output_SR
 {
@@ -57,3 +59,5 @@ class output_SR
     }
 
 };
+
+#endif

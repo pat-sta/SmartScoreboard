@@ -4,16 +4,27 @@ public:
 byte curr_bases;
 int frames_left;
 int curr_idx [3];
+bool add_run;
+bool start_count_runs;
 
 
 bool play_frame(){
+  add_run = false;
+  
 	if(frames_left==0) return false;
   print_idx();
 	curr_bases= curr_idx_value();
+ if (! runner_on_home(curr_idx_value())) start_count_runs = true;
  curr_idx[2]++;
+ 
+ if (runner_on_home(curr_bases) & ! runner_on_home(curr_idx_value()) & frames_left>1 &start_count_runs) add_run = true;
 	frames_left--;
   
 	return true;
+}
+
+bool runner_on_home(byte base){
+  return bitRead(base, 3);
 }
 
 void print_idx(){
@@ -25,12 +36,15 @@ void print_idx(){
 }
 
 void init_animation(byte start_bases, int hit_num){
+
 	curr_idx[0] = (start_bases & 0b0111);
 	curr_idx[1] = hit_num-1;
 	curr_idx[2] = 0;
 	frames_left= curr_idx_value();
   print_idx();
 	curr_idx[2]++;
+  add_run= false;
+  start_count_runs=false;
 	
 }
 
