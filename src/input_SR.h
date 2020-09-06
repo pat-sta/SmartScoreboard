@@ -3,6 +3,7 @@
 
 #include <SPI.h>
 #include <Wire.h>
+#include "buzzer.h"
 class input_SR
 {
   public:
@@ -10,6 +11,8 @@ class input_SR
     byte shift_2;
     byte activeButtonCode;
 
+    buzzer * buzzer_inst;
+    
     int t1_LED;
     int t2_LED;
 
@@ -23,7 +26,7 @@ class input_SR
     int PL;
     int t1pin;
     int t2pin;
-
+    
     void debugPress(int ignore_none){
       if (buttonPressed != 0) {
         Serial.println("-----------------------------");
@@ -53,15 +56,15 @@ class input_SR
       buttonPressed = 0;
       buttonPressedTeam = 0;
 
-      t1_LED = 100;
-      t2_LED = 100;
+      set_LED_brightness(1, 100);
+      set_LED_brightness(2, 100);
     }
 
     input_SR(int _PL, int _t1pin, int _t2pin) : PL(_PL), t1pin(_t1pin), t2pin(_t2pin)  {
       pinMode(PL, OUTPUT);
       pinMode(t1pin, OUTPUT);
       pinMode(t2pin, OUTPUT);
-
+      buzzer_inst = new buzzer(9);
       SPI.setClockDivider(SPI_CLOCK_DIV128);
       SPI.setDataMode(SPI_MODE0);
       SPI.setBitOrder(MSBFIRST);
@@ -69,13 +72,23 @@ class input_SR
       init();
     }
 
-    void set_LED_brightness(int t1_amt, int t2_amt){
-      t1_LED = (t1_amt != -1) ? t1_amt : t1_LED;
-      t2_LED = (t2_amt != -1) ? t2_amt : t2_LED;
-      analogWrite(t1pin, t1_LED);
-      analogWrite(t2pin, t2_LED);
+    void set_LED_brightness(int team, float amt){
+      if(amt>100) amt =100;
+      else if(amt<0) amt =0;
+      amt = 2.55*amt;
+      
+      if(team == 1) analogWrite(t1pin, amt);
+      else if (team ==2) analogWrite(t2pin, amt);
     }
 
+    void set_LED_brightness(float amt){
+      if(amt>100) amt =100;
+      else if(amt<0) amt =0;
+      amt = 2.55*amt;
+      
+      if(buttonPressedTeam == 1) analogWrite(t1pin, amt);
+      else if (buttonPressedTeam ==2) analogWrite(t2pin, amt);
+    }
     int currButtonPressed(){
       if (buttonPressedTeam == 1) return !bitRead(shift_1, 8 - buttonPressed);
       else if (buttonPressedTeam == 2) return !bitRead(shift_2, 8 - buttonPressed);
@@ -148,37 +161,49 @@ class input_SR
       extractButtonInfo();
       unsigned long time_pressed;
       int short_threshold = 400;
-      int long_threshold=1200;
+      int long_threshold=1800;
       pressType = 0;
-      digitalWrite(6, HIGH);
+      set_LED_brightness(100);
       time_pressed = millis();
       if (buttonPressedTeam != 0){
         pressType = 1;
         while (currButtonPressed()){
           
-          if(timeThresholdMet(time_pressed, long_threshold+600)){
-              digitalWrite(6, HIGH); 
-              pressType = 3;}
-          else if(timeThresholdMet(time_pressed, long_threshold+400)){
-              digitalWrite(6, LOW);
+          if(timeThresholdMet(time_pressed, long_threshold+300)){
+               set_LED_brightness(100); 
               pressType = 3;}
           else if(timeThresholdMet(time_pressed, long_threshold+200)){
-              digitalWrite(6, HIGH);
+               set_LED_brightness(0);
+              pressType = 3;}
+          else if(timeThresholdMet(time_pressed, long_threshold+100)){
+               set_LED_brightness(100); 
               pressType = 3;}
           else if (timeThresholdMet(time_pressed, long_threshold)){
-             digitalWrite(6, LOW);
+              set_LED_brightness(0); 
              pressType = 3;}
           else if (timeThresholdMet(time_pressed, short_threshold+200)){
-             digitalWrite(6, HIGH);
+              set_LED_brightness(100); 
              pressType = 2;}
           else if (timeThresholdMet(time_pressed, short_threshold)){
-            pressType = 2;
-             digitalWrite(6, LOW);}
-          
+             set_LED_brightness(0); 
+            pressType = 2; }
+
+          if (timeThresholdMet(time_pressed, short_threshold, short_threshold+40)){
+            buzzer_inst->toneOn();
+          }
+          if (timeThresholdMet(time_pressed, long_threshold, long_threshold+40)){
+            buzzer_inst->toneOn();
+          }
+          if (timeThresholdMet(time_pressed, long_threshold+100, long_threshold+140)){
+            buzzer_inst->toneOn();
+          }
+          else buzzer_inst->toneOff();
+            
           DataShiftIn();
         }
       }
-       digitalWrite(6, 1);
+       set_LED_brightness(1,100);
+       set_LED_brightness(2,100);
       //debugPress(0);
     }
 };

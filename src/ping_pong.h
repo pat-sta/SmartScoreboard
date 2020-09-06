@@ -52,7 +52,9 @@ ping_pong( input_SR * _buttons, hex_display * _hex, output_SR * _LEDs): Game(_bu
         t1_score =0;
         t2_score =0;
         
+        
       }
+      if (pressType==3 && buttonPressed ==5) return false;
       return true;
     }
     

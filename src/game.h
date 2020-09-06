@@ -32,7 +32,6 @@ void extractPressType(){
     }
 
    bool updateGame(){
-    Serial.println("update");
     extractPressType();
     if(!updateGameStatus()) {return false;}
     updateScoreboard();
