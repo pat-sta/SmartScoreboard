@@ -1,6 +1,6 @@
 # SmartScoreboard
 
-* Documentation Update in Progress *
+(Documentation Update in Progress)
 
 Electrical Components - Patrick Stach
 
