@@ -1,13 +1,16 @@
 # SmartScoreboard
 
+
+
 (Documentation Update in Progress)
 
 Electrical Components - Patrick Stach
 
 Mechanical Components - Thomas Schneider
+## Gallery With Demos
 
 ## Parts Used
-Arduino Nano
+Arduino Nano Board ATmega328P
 
 SparkFun 6.5" 7-Segment Display
 
@@ -25,4 +28,5 @@ LM2596 DC to DC Buck Converter
 
 5V Relay Board
 
+##
 
