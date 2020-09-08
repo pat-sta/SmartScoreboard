@@ -2,6 +2,7 @@
 
 ## Portfolio
 See the scoreboard in action and learn about specific parts of the build through video and pictures.
+https://illinois.digication.com/smart-scoreboard/home
 ### Scoreboard in Action
 ### Gallery
 
