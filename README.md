@@ -1,5 +1,7 @@
 # SmartScoreboard
-Patrick Stach- Circuit design and wiring, programming scoreboard
+Patrick Stach
+
+Circuit design and wiring, programming scoreboard
 
 Thomas Schneider- Scoreboard enclosure design and build, CAD design of modular housings/ enclosures
 
@@ -9,7 +11,7 @@ https://illinois.digication.com/smart-scoreboard/home
 
 [![Scoreboard in Action](https://i.gyazo.com/0468d4131be02ec51fff41f607d723c2.png)](https://illinois.digication.com/smart-scoreboard/scoreboard-in-action)
 
-[![Gallery](https://i.gyazo.com/15adc1b2b46882d81439852ed2e3a183.png)](https://illinois.digication.com/smart-scoreboard/gallery)
+[![Gallery](https://i.gyazo.com/27d7ac3582b6f74a01838cd4db52f31a.png)](https://illinois.digication.com/smart-scoreboard/gallery)
 
 ## Parts Used
 | Part                            | Purpose                                                                             | Vendor Link                                                                                      |
