@@ -1,8 +1,6 @@
 # SmartScoreboard
 
-
-
-(Documentation Update in Progress)
+Programmable Scoreboard With Control Panel
 
 Electrical Components - Patrick Stach
 
