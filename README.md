@@ -1,5 +1,5 @@
 # SmartScoreboard
-Programmable scoreboard for table games, made by:
+Wall-mounted programmable scoreboard featuring a real-time-clock and games such as Ping-Pong, Baseball, Die Toss.
 ## The Team
 **Patrick Stach** | stach2@illinois.edu    
 Circuit design and wiring, programming scoreboard.
