@@ -1,6 +1,6 @@
 # SmartScoreboard
 Programmable scoreboard for table games, made by:
-## Designers
+## The Team
 **Patrick Stach** | stach2@illinois.edu    
 Circuit design and wiring, programming scoreboard.
 
