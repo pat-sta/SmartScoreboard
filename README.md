@@ -1,9 +1,9 @@
 # SmartScoreboard
-Patrick Stach
-
+**Patrick Stach** | stach2@illinois.edu    
 Circuit design and wiring, programming scoreboard
 
-Thomas Schneider- Scoreboard enclosure design and build, CAD design of modular housings/ enclosures
+**Thomas Schneider** | thomass8@illinois.edu    
+Scoreboard enclosure design and build, CAD design of modular housings/ enclosures
 
 ## Portfolio
 See the scoreboard in action and learn about specific parts of the build through video and pictures.
