@@ -11,9 +11,7 @@ Scoreboard enclosure design and build, CAD design of modular housings/ enclosure
 See the scoreboard in action and learn about specific parts of the build through video and pictures.
 https://illinois.digication.com/smart-scoreboard/home
 
-[![Scoreboard in Action](https://i.gyazo.com/0468d4131be02ec51fff41f607d723c2.png)](https://illinois.digication.com/smart-scoreboard/scoreboard-in-action)
-
-[![Gallery](https://i.gyazo.com/a666786e582de226393e6f58a85702b1.png)](https://illinois.digication.com/smart-scoreboard/gallery)
+[![Scoreboard in Action](https://i.gyazo.com/8c9aa34129a5f807bd8be7a402f35e7d.png)](https://illinois.digication.com/smart-scoreboard/scoreboard-in-action)
 
 ## Parts Used
 | Part                            | Purpose                                                                             | Vendor Link                                                                                      |
