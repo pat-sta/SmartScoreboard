@@ -1,6 +1,6 @@
 # SmartScoreboard
 Fully custom-made programmable scoreboard featuring a real-time-clock and games such as Ping-Pong, Baseball, Die Toss.  
-[Code](https://github.com/pat-stach/SmartScoreboard/tree/master/src/SmartScoreboard) | [3D Models](https://github.com/pat-stach/SmartScoreboard/tree/master/src/3D%20Models)
+[Arduino Code](https://github.com/pat-stach/SmartScoreboard/tree/master/src/SmartScoreboard) | [3D Models](https://github.com/pat-stach/SmartScoreboard/tree/master/src/3D%20Models)
 
 ![](https://i.gyazo.com/6bef7e1ae3541527bc7f5714738d0bbe.jpg)
 ## The Team
