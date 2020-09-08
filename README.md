@@ -1,8 +1,9 @@
 # SmartScoreboard
-**Patrick Stach** | Electrical Engineering | stach2@illinois.edu    
+Programmable scoreboard for table games, made by:  
+**Patrick Stach** | stach2@illinois.edu    
 Circuit design and wiring, programming scoreboard.
 
-**Thomas Schneider** | Mechanical Engineering | thomass8@illinois.edu    
+**Thomas Schneider** | thomass8@illinois.edu    
 Scoreboard enclosure design and build, CAD design of modular housings/ enclosures.
 
 ## Portfolio
