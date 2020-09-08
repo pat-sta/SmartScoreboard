@@ -5,7 +5,7 @@ See the scoreboard in action and learn about specific parts of the build through
 https://illinois.digication.com/smart-scoreboard/home
 
 ### Scoreboard in Action
-[![Scoreboard in Action](https://i.gyazo.com/8b37cdb3213f77aae458c08acbc7bfba.png)](https://illinois.digication.com/smart-scoreboard/scoreboard-in-action)
+[![Scoreboard in Action](https://i.gyazo.com/0468d4131be02ec51fff41f607d723c2.png)](https://illinois.digication.com/smart-scoreboard/scoreboard-in-action)
 ### Gallery
 [![Gallery](https://i.gyazo.com/15adc1b2b46882d81439852ed2e3a183.png)](https://illinois.digication.com/smart-scoreboard/gallery)
 
