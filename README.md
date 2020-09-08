@@ -1,12 +1,7 @@
 # SmartScoreboard
 
-Programmable Scoreboard With Control Panel
-
-Electrical Components - Patrick Stach
-
-Mechanical Components - Thomas Schneider
 ## Portfolio
-See the scoreboard in action and see
+See the scoreboard in action and learn about specific parts of the build through video and pictures.
 
 ## Parts Used
 Arduino Nano Board ATmega328P
@@ -27,5 +22,4 @@ LM2596 DC to DC Buck Converter
 
 5V Relay Board
 
-## Circuit
 
