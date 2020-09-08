@@ -7,7 +7,7 @@ https://illinois.digication.com/smart-scoreboard/home
 ### Scoreboard in Action
 [![Scoreboard in Action](https://i.gyazo.com/4020cef48b52cf7de86382fbe188b8ec.png)](https://illinois.digication.com/smart-scoreboard/scoreboard-in-action)
 ### Gallery
-[![Gallery](https://i.gyazo.com/16c0fe6d08031772887fe4e3efdd8fdb.png)](https://illinois.digication.com/smart-scoreboard/gallery)
+[![Gallery](https://i.gyazo.com/15adc1b2b46882d81439852ed2e3a183.png)](https://illinois.digication.com/smart-scoreboard/gallery)
 
 ## Parts Used
 | Part                            | Purpose                                                                             | Vendor Link                                                                                      |
