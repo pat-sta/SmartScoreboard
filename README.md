@@ -3,10 +3,11 @@
 ## Portfolio
 See the scoreboard in action and learn about specific parts of the build through video and pictures.
 https://illinois.digication.com/smart-scoreboard/home
+
 ### Scoreboard in Action
 ### Gallery
 
-[![](https://gyazo.com/5e4a98e57bfb64382f11c4c1757f6f6a)](https://github.com/pat-stach/FPGA_Space_Invaders/blob/master/docs/FPGA%20Space%20Invaders%20Final%20Report.pdf "Final Lab Report")
+[![Scoreboard in Action](https://i.gyazo.com/4020cef48b52cf7de86382fbe188b8ec.png)](https://illinois.digication.com/smart-scoreboard/scoreboard-in-action)
 ## Parts Used
 | Part                            | Purpose                                                                             | Vendor Link                                                                                      |
 |---------------------------------|-------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
