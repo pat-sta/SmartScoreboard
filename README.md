@@ -8,7 +8,7 @@ Circuit design and wiring, programming scoreboard.
 Scoreboard enclosure design and build, CAD design of modular housings/ enclosures.
 
 ## Portfolio
-See the scoreboard in action and learn about specific parts of the build through video and pictures.
+See the scoreboard in action and learn about specific parts of the build through video and pictures.  
 https://illinois.digication.com/smart-scoreboard/home
 
 [![Scoreboard in Action](https://i.gyazo.com/8c9aa34129a5f807bd8be7a402f35e7d.png)](https://illinois.digication.com/smart-scoreboard/scoreboard-in-action)
