@@ -1,5 +1,5 @@
 # SmartScoreboard
-Wall-mounted programmable scoreboard featuring a real-time-clock and games such as Ping-Pong, Baseball, Die Toss.
+Wall-mounted Arduino-based programmable scoreboard featuring a real-time-clock and games such as Ping-Pong, Baseball, Die Toss.
 ## The Team
 **Patrick Stach** | stach2@illinois.edu    
 Circuit design and wiring, programming scoreboard.
